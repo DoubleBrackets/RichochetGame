@@ -56,7 +56,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player other)
     {
         Debug.LogFormat("OnPlayerEnteredRoom() {0}", other.NickName); // not seen if you're the player connecting
-
+        Debug.Log("Ping: " + PhotonNetwork.GetPing());
         //Updates player names when a new player joins
         int c = 0;
         foreach(Player p in PhotonNetwork.PlayerList)
