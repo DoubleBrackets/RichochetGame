@@ -6,7 +6,7 @@ using Photon.Realtime;
 
 public class PlayerTransformView : MonoBehaviourPunCallbacks, IPunObservable
 {
-    public static float smoothCoeff = 0.1f;
+    public static float smoothCoeff = 0.02f;
 
     private Vector3 currentPos;
     private Vector3 lastPos;
@@ -35,7 +35,7 @@ public class PlayerTransformView : MonoBehaviourPunCallbacks, IPunObservable
         if(!photonView.IsMine)
         {
             lerpCounter += Time.fixedDeltaTime / timeBetweenPackets;
-            transform.position = Vector3.Lerp(lastPos, currentPos, lerpCounter);
+            transform.position = Vector3.LerpUnclamped(lastPos, currentPos, lerpCounter);
         }
     }
 
