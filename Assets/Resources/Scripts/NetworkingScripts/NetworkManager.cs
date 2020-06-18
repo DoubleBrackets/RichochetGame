@@ -75,7 +75,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("RichochetMainMenu");
     }
 
 

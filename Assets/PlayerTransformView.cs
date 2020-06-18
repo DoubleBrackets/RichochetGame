@@ -6,9 +6,9 @@ using Photon.Realtime;
 
 public class PlayerTransformView : MonoBehaviourPunCallbacks, IPunObservable
 {
-    public static float smoothCoeff = 2f;
+    public static float smoothCoeff = 20f;
 
-    public static float lerpCoeff = 1f;
+    public static float lerpCoeff = 3f;
 
     private Vector3 currentPos;
     private Vector3 lastPos;
@@ -23,8 +23,12 @@ public class PlayerTransformView : MonoBehaviourPunCallbacks, IPunObservable
     float currentTime;
     void Start()
     {
-        PhotonNetwork.SendRate = 30;
-        PhotonNetwork.SerializationRate = 30;
+        if(!photonView.IsMine)
+        {
+            gameObject.GetComponent<BoxCollider2D>().enabled = false;
+        }
+        PhotonNetwork.SendRate = 20;
+        PhotonNetwork.SerializationRate = 20;
         currentPos = gameObject.transform.position;
         lastPos = gameObject.transform.position;
         vel = Vector2.zero;
@@ -46,18 +50,19 @@ public class PlayerTransformView : MonoBehaviourPunCallbacks, IPunObservable
         if(stream.IsWriting && photonView.IsMine)
         {
             currentPos = gameObject.transform.position;
-            currentTime = Time.realtimeSinceStartup;
+            
             stream.SendNext(transform.position);
-            stream.SendNext(rb.velocity);
+            stream.SendNext((Vector3)rb.velocity);
 
-            prevTime = currentTime;
+           
             lastPos = currentPos;
         }
         else
         {
             currentPos = (Vector3)stream.ReceiveNext();
             vel = (Vector3)stream.ReceiveNext();
-          
+            currentTime = Time.realtimeSinceStartup;
+            prevTime = currentTime;
         }
     }
 }
