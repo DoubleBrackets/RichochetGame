@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6714545258117579602}
   - component: {fileID: 6714545258117579601}
   - component: {fileID: 4973971725615298306}
-  - component: {fileID: -5395774572671053109}
+  - component: {fileID: -6522943834654223516}
   m_Layer: 0
   m_Name: PrototypePlayer
   m_TagString: Untagged
@@ -162,14 +162,14 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
+  Synchronization: 2
   OwnershipTransfer: 0
   ObservedComponents:
-  - {fileID: -5395774572671053109}
+  - {fileID: -6522943834654223516}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &-5395774572671053109
+--- !u!114 &-6522943834654223516
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -178,9 +178,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 6714545258117579606}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Script: {fileID: 11500000, guid: 1582d1bac264fa140aca1a8e8399c433, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 0
-  m_SynchronizeScale: 0
