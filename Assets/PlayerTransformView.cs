@@ -6,9 +6,9 @@ using Photon.Realtime;
 
 public class PlayerTransformView : MonoBehaviourPunCallbacks, IPunObservable
 {
-    public static float smoothCoeff = 0.02f;
+    public static float smoothCoeff = 2f;
 
-    public static float lerpCoeff = 1.1f;
+    public static float lerpCoeff = 1f;
 
     private Vector3 currentPos;
     private Vector3 lastPos;
@@ -36,9 +36,7 @@ public class PlayerTransformView : MonoBehaviourPunCallbacks, IPunObservable
     {
         if(!photonView.IsMine)
         {
-            lerpCounter += Time.fixedDeltaTime / timeBetweenPackets;
-
-            transform.position = Vector3.Lerp(lastPos, currentPos, lerpCounter/lerpCoeff);
+            transform.position = Vector3.Lerp(transform.position, currentPos + lerpCoeff * vel * Time.fixedDeltaTime, Time.fixedDeltaTime * smoothCoeff);
         }
     }
 
@@ -49,21 +47,17 @@ public class PlayerTransformView : MonoBehaviourPunCallbacks, IPunObservable
         {
             currentPos = gameObject.transform.position;
             currentTime = Time.realtimeSinceStartup;
-            stream.SendNext(currentPos+(Vector3)rb.velocity * smoothCoeff);
-            //sends velocity     
-            stream.SendNext(currentTime - prevTime);
+            stream.SendNext(transform.position);
+            stream.SendNext(rb.velocity);
 
-            lastPos = currentPos;
             prevTime = currentTime;
+            lastPos = currentPos;
         }
         else
         {
             currentPos = (Vector3)stream.ReceiveNext();
-            timeBetweenPackets = (float)stream.ReceiveNext();
-
-            
-            lastPos = gameObject.transform.position;
-            lerpCounter = 0;
+            vel = (Vector3)stream.ReceiveNext();
+          
         }
     }
 }
