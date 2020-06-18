@@ -8,6 +8,8 @@ public class PlayerTransformView : MonoBehaviourPunCallbacks, IPunObservable
 {
     public static float smoothCoeff = 0.02f;
 
+    public static float lerpCoeff = 1.05f;
+
     private Vector3 currentPos;
     private Vector3 lastPos;
     private Vector3 vel;
@@ -35,6 +37,10 @@ public class PlayerTransformView : MonoBehaviourPunCallbacks, IPunObservable
         if(!photonView.IsMine)
         {
             lerpCounter += Time.fixedDeltaTime / timeBetweenPackets;
+            if(lerpCounter > lerpCoeff)
+            {
+                lerpCounter = lerpCoeff;
+            }
             transform.position = Vector3.LerpUnclamped(lastPos, currentPos, lerpCounter);
         }
     }

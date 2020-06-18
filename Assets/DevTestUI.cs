@@ -10,6 +10,7 @@ public class DevTestUI : MonoBehaviour
     public static DevTestUI devTestUI;
 
     public InputField smoothCoeffField;
+    public InputField lerpCoeffField;
     private void Awake()
     {
         devTestUI = this;
@@ -21,5 +22,13 @@ public class DevTestUI : MonoBehaviour
         res = float.Parse(smoothCoeffField.text);
         PlayerTransformView.smoothCoeff = res;
         print("smooth coeff set to " + res);
+    }
+
+    public void SetLerpCoeff()
+    {
+        float res;
+        res = float.Parse(lerpCoeffField.text);
+        PlayerTransformView.lerpCoeff = res;
+        print("lerp coeff set to " + res);
     }
 }
