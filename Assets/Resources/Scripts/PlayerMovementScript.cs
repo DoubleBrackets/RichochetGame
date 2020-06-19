@@ -4,7 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class PlayerMovementScript : MonoBehaviourPunCallbacks
+public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
 {
     public static GameObject LocalPlayerInstance;
     //Components
@@ -30,7 +30,7 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks
         if (photonView.IsMine && PhotonNetwork.IsConnected)
         {
             LocalPlayerInstance = gameObject;
-            CameraScript.cameraScript.cameraSubject = gameObject;
+            //CameraScript.cameraScript.cameraSubject = gameObject;
         }
     }
 
@@ -76,6 +76,20 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks
                 SetYVelocity(playerRigidBody.velocity.y * 0.8f);
         }
 
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting && photonView.IsMine)
+        {
+            stream.SendNext(horizontalInput);
+            stream.SendNext(verticalInput);
+        }
+        else
+        {
+            horizontalInput =(int) stream.ReceiveNext();
+            verticalInput = (int)stream.ReceiveNext();
+        }
     }
 
 

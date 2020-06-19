@@ -21,19 +21,25 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
         if(Input.GetMouseButtonDown(0))
         {
             Vector2 dir = GetMouseDir();
-            photonView.RPC("CreateProjectile", RpcTarget.AllViaServer, transform.position + (Vector3)dir.normalized * offSet,speed,(Vector3)dir,photonView.ViewID);
+            photonView.RPC("CreateProjectile", RpcTarget.All, transform.position + (Vector3)dir.normalized * offSet,speed,(Vector3)dir,photonView.ViewID,(float)PhotonNetwork.Time);
         }
     }
 
     [PunRPC]
-    public void CreateProjectile(Vector3 pos, float speed, Vector3 dir,int shooterViewId)
+    public void CreateProjectile(Vector3 pos, float speed, Vector3 dir,int shooterViewId,float rpcInvokeTime)
     {
         GameObject proj = Instantiate(projPrefab, pos, Quaternion.identity);
         proj.GetPhotonView().ViewID = projectileViewId;
         ProjectileScript pScript = proj.GetComponent<ProjectileScript>();
         pScript.speed = speed;
-        pScript.OnBulletShoot(pos,0, 0, dir.normalized * speed);
+        //Lag compensation
+        Vector3 predictedPos = proj.transform.position + dir * Mathf.Max(0,(float)(PhotonNetwork.Time - rpcInvokeTime));
+
+        pScript.OnBulletBounce(predictedPos,dir,0,(float)PhotonNetwork.Time);
         projectileViewId++;
+
+
+        
         //Disables collisions with the shooter for a period of time
         Collider2D shooterColl = PhotonNetwork.GetPhotonView(shooterViewId).gameObject.GetComponent<Collider2D>();
         Collider2D projColl = proj.GetComponent<Collider2D>();
