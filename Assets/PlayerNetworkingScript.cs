@@ -31,17 +31,17 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
 
     IEnumerator PlayerHit()
     {
-        photonView.RPC("PlayDeathEffects", RpcTarget.All);
+        photonView.RPC("PlayDeathEffects", RpcTarget.All, PhotonNetwork.LocalPlayer.NickName);
         yield return new WaitForSeconds(1f);
         NetworkManager.networkManager.PlayerDeath(PhotonNetwork.LocalPlayer.NickName);
     }
 
     [PunRPC]
 
-    private void PlayDeathEffects()
+    private void PlayDeathEffects(string str)
     {
         gameObject.GetComponent<SpriteRenderer>().enabled = false;
-        PlayerParticleManager.playerParticleManager.PlayParticle("DeathParticle"+ PhotonNetwork.LocalPlayer.NickName);
+        PlayerParticleManager.playerParticleManager.PlayParticle("DeathParticle"+ str);
     }
 
     [PunRPC]
