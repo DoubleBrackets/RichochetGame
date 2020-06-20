@@ -12,6 +12,8 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
     public Text ammoTag;
     public Image reloadBar;
 
+    public string nickName;
+
     private void Awake()//Sets nametag on player instantiate
     {
         if(photonView.IsMine)
@@ -39,7 +41,7 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
     private void PlayDeathEffects()
     {
         gameObject.GetComponent<SpriteRenderer>().enabled = false;
-        PlayerParticleManager.playerParticleManager.PlayParticle("DeathParticle");
+        PlayerParticleManager.playerParticleManager.PlayParticle("DeathParticle"+ PhotonNetwork.LocalPlayer.NickName);
     }
 
     [PunRPC]
@@ -47,6 +49,7 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
     private void SetNameTagMain(string val)
     {
         nameTag.text = val;
+        nickName = val;
     }
     
     public void SpawnPlayer(Vector3 pos)

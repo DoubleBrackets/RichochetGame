@@ -32,20 +32,20 @@ MonoBehaviour:
   StartInOfflineMode: 0
   RpcList:
   - ClickRpc
+  - CreateProjectile
   - DestroyRpc
   - DestroySpaceship
   - Fire
-  - RespawnSpaceship
-  - CreateProjectile
   - OnBulletBounce
+  - PlayDeathEffects
+  - PlayerDash
+  - PlayerDeathMain
+  - ResetLevelMain
+  - RespawnSpaceship
+  - SetAmmoValueMain
   - SetNameTagMain
   - SpawnPlayerMain
-  - PlayerDash
-  - SetAmmoValueMain
   - UpdateReloadBarMain
-  - ResetLevelMain
-  - PlayerDeathMain
-  - PlayDeathEffects
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

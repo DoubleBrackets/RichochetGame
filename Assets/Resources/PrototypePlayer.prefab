@@ -46,6 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   particleId: DeathParticle
+  usePlayerNickname: 1
+  pV: {fileID: 6714545258117579606}
 --- !u!199 &466014269785925379
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -5298,6 +5300,7 @@ MonoBehaviour:
   nameTag: {fileID: 1333305850352741442}
   ammoTag: {fileID: 2283827129614954468}
   reloadBar: {fileID: 1183771749564806760}
+  nickName: 
 --- !u!114 &4505964401098212923
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,13 +1,18 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerParticleScript : MonoBehaviour
+public class PlayerParticleScript : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
     public string particleId;
 
+    public bool usePlayerNickname = true;
+
     ParticleSystem pSys;
+
+    public GameObject pV;
 
     void Start()
     {
@@ -15,6 +20,10 @@ public class PlayerParticleScript : MonoBehaviour
         PlayerParticleManager.playerParticleManager.setParticleActiveEvent += SetActive;
         PlayerParticleManager.playerParticleManager.playParticleEvent += Play;
         PlayerParticleManager.playerParticleManager.stopParticleEvent += Stop;
+        if(usePlayerNickname)
+        {
+            particleId = particleId + gameObject.GetComponentInParent<PlayerNetworkingScript>().nickName;
+        }
     }
 
 
