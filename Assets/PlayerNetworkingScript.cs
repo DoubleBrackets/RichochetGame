@@ -25,6 +25,8 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
     {
         if(collision.collider.gameObject.layer == 10)//Is a projectile
         {
+            gameObject.layer = 11;
+            gameObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
             StartCoroutine(PlayerHit());           
         }
     }

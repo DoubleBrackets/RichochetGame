@@ -3365,10 +3365,6 @@ __ATINIT__.push({
  })
 }, {
  func: (function() {
-  __GLOBAL__sub_I_Il2CppCodeRegistration_cpp();
- })
-}, {
- func: (function() {
   __GLOBAL__sub_I_Lump_libil2cpp_vm_cpp();
  })
 }, {
@@ -3382,6 +3378,10 @@ __ATINIT__.push({
 }, {
  func: (function() {
   __GLOBAL__sub_I_Lump_libil2cpp_gc_cpp();
+ })
+}, {
+ func: (function() {
+  __GLOBAL__sub_I_Il2CppCodeRegistration_cpp();
  })
 }, {
  func: (function() {
@@ -15090,6 +15090,11 @@ function nullFunc_iiifiii(x) {
  err("Build with ASSERTIONS=2 for more info.");
  abort(x);
 }
+function nullFunc_iiifiiifi(x) {
+ err("Invalid function pointer called with signature 'iiifiiifi'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");
+ err("Build with ASSERTIONS=2 for more info.");
+ abort(x);
+}
 function nullFunc_iiifiiii(x) {
  err("Invalid function pointer called with signature 'iiifiiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");
  err("Build with ASSERTIONS=2 for more info.");
@@ -15792,11 +15797,6 @@ function nullFunc_viifi(x) {
 }
 function nullFunc_viifii(x) {
  err("Invalid function pointer called with signature 'viifii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");
- err("Build with ASSERTIONS=2 for more info.");
- abort(x);
-}
-function nullFunc_viifiifi(x) {
- err("Invalid function pointer called with signature 'viifiifi'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");
  err("Build with ASSERTIONS=2 for more info.");
  abort(x);
 }
@@ -16896,6 +16896,16 @@ function invoke_iiifiii(index, a1, a2, a3, a4, a5, a6) {
  var sp = stackSave();
  try {
   return Module["dynCall_iiifiii"](index, a1, a2, a3, a4, a5, a6);
+ } catch (e) {
+  stackRestore(sp);
+  if (typeof e !== "number" && e !== "longjmp") throw e;
+  Module["setThrew"](1, 0);
+ }
+}
+function invoke_iiifiiifi(index, a1, a2, a3, a4, a5, a6, a7, a8) {
+ var sp = stackSave();
+ try {
+  return Module["dynCall_iiifiiifi"](index, a1, a2, a3, a4, a5, a6, a7, a8);
  } catch (e) {
   stackRestore(sp);
   if (typeof e !== "number" && e !== "longjmp") throw e;
@@ -18312,16 +18322,6 @@ function invoke_viifii(index, a1, a2, a3, a4, a5) {
   Module["setThrew"](1, 0);
  }
 }
-function invoke_viifiifi(index, a1, a2, a3, a4, a5, a6, a7) {
- var sp = stackSave();
- try {
-  Module["dynCall_viifiifi"](index, a1, a2, a3, a4, a5, a6, a7);
- } catch (e) {
-  stackRestore(sp);
-  if (typeof e !== "number" && e !== "longjmp") throw e;
-  Module["setThrew"](1, 0);
- }
-}
 function invoke_viifiii(index, a1, a2, a3, a4, a5, a6) {
  var sp = stackSave();
  try {
@@ -19200,6 +19200,7 @@ Module.asmLibraryArg = {
  "nullFunc_iiifi": nullFunc_iiifi,
  "nullFunc_iiifii": nullFunc_iiifii,
  "nullFunc_iiifiii": nullFunc_iiifiii,
+ "nullFunc_iiifiiifi": nullFunc_iiifiiifi,
  "nullFunc_iiifiiii": nullFunc_iiifiiii,
  "nullFunc_iiii": nullFunc_iiii,
  "nullFunc_iiiifffffi": nullFunc_iiiifffffi,
@@ -19341,7 +19342,6 @@ Module.asmLibraryArg = {
  "nullFunc_viiffii": nullFunc_viiffii,
  "nullFunc_viifi": nullFunc_viifi,
  "nullFunc_viifii": nullFunc_viifii,
- "nullFunc_viifiifi": nullFunc_viifiifi,
  "nullFunc_viifiii": nullFunc_viifiii,
  "nullFunc_viifiiii": nullFunc_viifiiii,
  "nullFunc_viifiiiii": nullFunc_viifiiiii,
@@ -19492,6 +19492,7 @@ Module.asmLibraryArg = {
  "invoke_iiifi": invoke_iiifi,
  "invoke_iiifii": invoke_iiifii,
  "invoke_iiifiii": invoke_iiifiii,
+ "invoke_iiifiiifi": invoke_iiifiiifi,
  "invoke_iiifiiii": invoke_iiifiiii,
  "invoke_iiii": invoke_iiii,
  "invoke_iiiifffffi": invoke_iiiifffffi,
@@ -19633,7 +19634,6 @@ Module.asmLibraryArg = {
  "invoke_viiffii": invoke_viiffii,
  "invoke_viifi": invoke_viifi,
  "invoke_viifii": invoke_viifii,
- "invoke_viifiifi": invoke_viifiifi,
  "invoke_viifiii": invoke_viifiii,
  "invoke_viifiiii": invoke_viifiiii,
  "invoke_viifiiiii": invoke_viifiiiii,
@@ -26174,6 +26174,11 @@ var dynCall_iiifiii = Module["dynCall_iiifiii"] = (function() {
  assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
  return Module["asm"]["dynCall_iiifiii"].apply(null, arguments);
 });
+var dynCall_iiifiiifi = Module["dynCall_iiifiiifi"] = (function() {
+ assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
+ assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
+ return Module["asm"]["dynCall_iiifiiifi"].apply(null, arguments);
+});
 var dynCall_iiifiiii = Module["dynCall_iiifiiii"] = (function() {
  assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
  assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
@@ -26878,11 +26883,6 @@ var dynCall_viifii = Module["dynCall_viifii"] = (function() {
  assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
  assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
  return Module["asm"]["dynCall_viifii"].apply(null, arguments);
-});
-var dynCall_viifiifi = Module["dynCall_viifiifi"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return Module["asm"]["dynCall_viifiifi"].apply(null, arguments);
 });
 var dynCall_viifiii = Module["dynCall_viifiii"] = (function() {
  assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");

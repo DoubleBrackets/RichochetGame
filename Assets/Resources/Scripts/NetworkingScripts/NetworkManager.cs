@@ -60,9 +60,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             }
 
             //Starts game if local client is second player
-            if (PhotonNetwork.CurrentRoom.PlayerCount == playersNeededToStart)
+            if (PhotonNetwork.CurrentRoom.PlayerCount == playersNeededToStart && !PhotonNetwork.IsMasterClient)
             {
-                StartCoroutine(StartGame());
+                photonView.RPC("StartGame", RpcTarget.AllViaServer);
             }
         }
         
@@ -80,19 +80,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         Debug.LogFormat("OnPlayerEnteredRoom() {0}", other.NickName); // not seen if you're the player connecting
         Debug.Log("Ping: " + PhotonNetwork.GetPing());
-
-        //Starts game if 2nd player joins
-        if(PhotonNetwork.CurrentRoom.PlayerCount == playersNeededToStart)
-        {
-            StartCoroutine(StartGame());
-        }
         if (PhotonNetwork.IsMasterClient)
         {
             Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
         }
     }
+    [PunRPC]
 
-    IEnumerator StartGame()
+    private void StartGame()
+    {
+        StartCoroutine(StartGameMain());
+    }
+    IEnumerator StartGameMain()
     {
         OptionsUIScript.optionsUIScript.GameStartedUI();
         yield return new WaitForSeconds(5);
@@ -147,6 +146,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         gameStarted = false;
         PlayerMovementScript.LocalPlayerInstance.layer = 11;
+        PlayerMovementScript.LocalPlayerInstance.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
         OptionsUIScript.optionsUIScript.ShowDeathMessage(name);
     }
 }
