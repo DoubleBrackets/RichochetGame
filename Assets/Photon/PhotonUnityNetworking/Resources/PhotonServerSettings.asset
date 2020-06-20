@@ -47,6 +47,8 @@ MonoBehaviour:
   - SpawnPlayerMain
   - UpdateReloadBarMain
   - StartGame
+  - PlayParticleRPCMain
+  - StorePlayerGameobject
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

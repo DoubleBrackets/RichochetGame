@@ -12,7 +12,7 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
     private float speed = 80;
 
     public GameObject projPrefab;
-
+    public GameObject muzzleFlashObject;
 
     private float shootCooldown = 0.2f;
     private float shootCooldownTimer = 0;
@@ -64,12 +64,13 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
     private void ShootProjectile()
     {
         Vector2 dir = GetMouseDir();
+
         //Creates local projectile first
         GameObject newProj = CreateProjectile(transform.position + (Vector3)dir.normalized * offSet, speed, dir);
         PhotonView pView = newProj.GetPhotonView();
         PhotonNetwork.AllocateViewID(pView);
         //Sends rpc to other client to create projectile
-        photonView.RPC("CreateProjectile", RpcTarget.Others, transform.position + (Vector3)dir.normalized * offSet, speed, (Vector3)dir, photonView.ViewID, pView.ViewID,(float)PhotonNetwork.Time);
+        photonView.RPC("CreateProjectile", RpcTarget.Others, transform.position + (Vector3)dir.normalized * offSet, speed, (Vector3)dir, photonView.ViewID, pView.ViewID,(float)PhotonNetwork.Time,PhotonNetwork.LocalPlayer.NickName);
     }
 
     //Instantiating local projectile
@@ -78,6 +79,10 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
         GameObject proj = Instantiate(projPrefab, pos, Quaternion.identity);
         ProjectileScript pScript = proj.GetComponent<ProjectileScript>();
         pScript.speed = speed;
+        //Particles
+        float angle = Mathf.Rad2Deg * Mathf.Atan2(dir.y, dir.x);
+        muzzleFlashObject.transform.rotation = Quaternion.Euler(0, 0, angle);
+        PlayerParticleManager.playerParticleManager.PlayParticleRPC("MuzzleFlash" + PhotonNetwork.LocalPlayer.NickName);
 
         pScript.OnBulletBounce(pos, dir, 0, (float)PhotonNetwork.Time);
         //Disables collisions with the shooter for a period of time
@@ -90,8 +95,9 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
     }
     //Instantiating through RPC
     [PunRPC]
-    public GameObject CreateProjectile(Vector3 pos, float speed, Vector3 dir,int shooterViewId,int projViewId,float rpcInvokeTime)
+    public GameObject CreateProjectile(Vector3 pos, float speed, Vector3 dir,int shooterViewId,int projViewId,float rpcInvokeTime,string sourceNickname)
     {
+        
         GameObject proj = Instantiate(projPrefab, pos, Quaternion.identity);
         ProjectileScript pScript = proj.GetComponent<ProjectileScript>();
         pScript.speed = speed;
@@ -100,9 +106,12 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
         Vector3 predictedPos = proj.transform.position + dir * Mathf.Max(0,(float)(PhotonNetwork.Time - rpcInvokeTime)/2f);
 
         pScript.OnBulletBounce(predictedPos,dir,0,(float)PhotonNetwork.Time);
+        //Particles
+        float angle = Mathf.Rad2Deg * Mathf.Atan2(dir.y, dir.x);
+        muzzleFlashObject.transform.rotation = Quaternion.Euler(0, 0, angle);
+        PlayerParticleManager.playerParticleManager.PlayParticleRPC("MuzzleFlash" + sourceNickname);
 
 
-        
         //Disables collisions with the shooter for a period of time
         Collider2D shooterColl = PhotonNetwork.GetPhotonView(shooterViewId).gameObject.GetComponent<Collider2D>();
         Collider2D projColl = proj.GetComponent<Collider2D>();

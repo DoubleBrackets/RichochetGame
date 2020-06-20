@@ -21,6 +21,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public GameObject playerPrefab;
 
+    public GameObject opponentGameObject;
+
     public GameObject p1Spawn;
     public GameObject p2Spawn;
 
@@ -64,6 +66,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             {
                 photonView.RPC("StartGame", RpcTarget.AllViaServer);
             }
+            //Sends player gameobject to other client
+            photonView.RPC("StorePlayerGameobject",RpcTarget.OthersBuffered,newPlayer.GetPhotonView().ViewID);
         }
         
         else
@@ -75,6 +79,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     }
 
+    [PunRPC]
+
+    private void StorePlayerGameobject(int viewId)
+    {
+        opponentGameObject = PhotonNetwork.GetPhotonView(viewId).gameObject;
+    }
 
     public override void OnPlayerEnteredRoom(Player other)
     {

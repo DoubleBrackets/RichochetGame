@@ -7,17 +7,42 @@ using UnityEngine.UI;
 
 public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
 {
-
+    
     public Text nameTag;
     public Text ammoTag;
     public Image reloadBar;
 
     public string nickName;
 
+    //Tracking arrow 
+    public GameObject trackingArrow;
+    private float arrowOffset = 15f;
+
     private void Awake()//Sets nametag on player instantiate
     {
         if(photonView.IsMine)
+        {
             photonView.RPC("SetNameTagMain", RpcTarget.AllBuffered, PhotonNetwork.LocalPlayer.NickName);
+            trackingArrow.SetActive(true);
+        }
+    }
+
+    private void Update()
+    {
+        if (!NetworkManager.networkManager.gameStarted || NetworkManager.networkManager.opponentGameObject == null || !photonView.IsMine)
+            return;
+        Vector2 arrowDir = NetworkManager.networkManager.opponentGameObject.transform.position - gameObject.transform.position;
+        if(arrowDir.magnitude <= arrowOffset+10f)
+        {
+            trackingArrow.SetActive(false);
+        }
+        else
+        {
+            trackingArrow.SetActive(true);
+        }
+        float angle = Mathf.Rad2Deg*Mathf.Atan2(arrowDir.y, arrowDir.x);
+        trackingArrow.transform.position = (Vector2)transform.position + (arrowDir.normalized)*arrowOffset;
+        trackingArrow.transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
     //Player dies when hit by projectile

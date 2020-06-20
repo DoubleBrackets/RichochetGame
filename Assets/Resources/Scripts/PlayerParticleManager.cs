@@ -22,6 +22,18 @@ public class PlayerParticleManager : MonoBehaviourPunCallbacks
         playParticleEvent?.Invoke(_id);
     }
 
+    public void PlayParticleRPC(string _id)
+    {
+        photonView.RPC("PlayParticleRPCMain", RpcTarget.All, _id);
+    }
+
+    [PunRPC]
+
+    private void PlayParticleRPCMain(string _id)
+    {
+        playParticleEvent?.Invoke(_id);
+    }
+
     public event Action<String> stopParticleEvent;
     public void StopParticle(string _id)
     {
