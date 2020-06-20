@@ -9,13 +9,13 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
     public float speed;
     public Rigidbody2D rigidBody;
     public LineRenderer lineRen;
+    public ParticleSystem onCollisionParticles;
 
     private Vector2 savedVelocityOnBounce;
 
-    private float bounceDelay = 0.15f;
+    private float bounceDelay = 0.25f;
 
     private float bounceRandomness = 5f;//Degrees of randomness when bouncing
-    private float radius;
 
     private bool isInBounce = false;
 
@@ -23,14 +23,16 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
     private float widthMult;
 
     private float startTime;
+
     private void Awake()
     {
-        radius = gameObject.GetComponent<CircleCollider2D>().bounds.extents.x;
         widthMult = lineRen.widthMultiplier;
+        onCollisionParticles.Stop();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        onCollisionParticles.Play();
         if(!PhotonNetwork.IsMasterClient)//if not master client, then wait for bounce position/vel from master client
         {
             transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(Vector2.zero,rigidBody.velocity) + 90f);
@@ -61,7 +63,7 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
         //Creates line indicator
         
         lineRen.SetPosition(0, transform.position);
-        RaycastHit2D rayCast = Physics2D.CircleCast(transform.position, radius, savedVelocityOnBounce, 100f,indicatorRaycastMask);
+        RaycastHit2D rayCast = Physics2D.Raycast(transform.position, savedVelocityOnBounce, 1000f,indicatorRaycastMask);
         if(rayCast.collider != null)
         {
             lineRen.widthMultiplier = widthMult;

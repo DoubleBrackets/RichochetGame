@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.UI;
 
 public class PlayerShootingScript : MonoBehaviourPunCallbacks
 {
-    private float offSet = 2f;
+    private float offSet = 0f;
 
     private float speed = 80;
 
@@ -14,12 +15,43 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
 
     private static int projectileViewId = 50;
 
+
+    private float shootCooldown = 0.3f;
+    private float shootCooldownTimer = 0;
+
+    private int ammo = 3;
+    private int maxAmmo = 3;
+
+    private float reloadCooldown = 2f;
+    private float reloadCooldownTimer = 0;
+
     void Update()
     {
-        if (!photonView.IsMine)
+        if (!photonView.IsMine || !NetworkManager.networkManager.gameStarted)
             return;
-        if(Input.GetMouseButtonDown(0))
+        if (shootCooldownTimer > 0)
         {
+            shootCooldownTimer -= Time.deltaTime;
+        }
+        if (reloadCooldownTimer > 0)
+        {
+            reloadCooldownTimer -= Time.deltaTime;
+            if(reloadCooldownTimer <= 0)
+            {
+                ammo = maxAmmo;
+                gameObject.GetComponent<PlayerNetworkingScript>().SetAmmoValue(ammo, maxAmmo);
+            }
+        }
+        if (Input.GetMouseButtonDown(0) && shootCooldownTimer <= 0 && ammo > 0)
+        {
+            ammo--;
+            //Updates ammo value
+            gameObject.GetComponent<PlayerNetworkingScript>().SetAmmoValue(ammo,maxAmmo);
+            if (ammo == 0)
+            {
+                reloadCooldownTimer = reloadCooldown;
+            }
+            shootCooldownTimer = shootCooldown;
             Vector2 dir = GetMouseDir();
             photonView.RPC("CreateProjectile", RpcTarget.All, transform.position + (Vector3)dir.normalized * offSet,speed,(Vector3)dir,photonView.ViewID,(float)PhotonNetwork.Time);
         }
@@ -33,7 +65,7 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
         ProjectileScript pScript = proj.GetComponent<ProjectileScript>();
         pScript.speed = speed;
         //Lag compensation
-        Vector3 predictedPos = proj.transform.position + dir * Mathf.Max(0,(float)(PhotonNetwork.Time - rpcInvokeTime));
+        Vector3 predictedPos = proj.transform.position + dir * Mathf.Max(0,(float)(PhotonNetwork.Time - rpcInvokeTime)/2f);
 
         pScript.OnBulletBounce(predictedPos,dir,0,(float)PhotonNetwork.Time);
         projectileViewId++;
@@ -49,7 +81,7 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
     IEnumerator StopIgnoringCollision(Collider2D c1, Collider2D c2)
     {
         Physics2D.IgnoreCollision(c1, c2,true);
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.2f);
         Physics2D.IgnoreCollision(c1, c2,false);
     }
 
@@ -59,4 +91,5 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
         return (mousePos - (Vector2)transform.position);
         
     }
+
 }

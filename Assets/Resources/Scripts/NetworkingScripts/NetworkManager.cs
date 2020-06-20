@@ -21,6 +21,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public GameObject playerPrefab;
 
+    public GameObject p1Spawn;
+    public GameObject p2Spawn;
+
+    public static NetworkManager networkManager;
+
+    public bool gameStarted = true;
+
+    private void Awake()
+    {
+        networkManager = this;
+    }
+
     private void Start()
     {
 
@@ -33,20 +45,28 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManager.GetActiveScene());
             // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-            PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
+            GameObject newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
+
+            //Sets player at spawn position
+            if (PhotonNetwork.PlayerList.Length == 1)
+            {
+                newPlayer.GetComponent<PlayerNetworkingScript>().SpawnPlayer(p1Spawn.transform.position);
+            }
+            else
+            {
+                newPlayer.GetComponent<PlayerNetworkingScript>().SpawnPlayer(p2Spawn.transform.position);
+            }
+
+            //Starts game if local client is second player
+            if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
+            {
+                gameStarted = true;
+            }
         }
         
         else
         {
             Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
-        }
-
-        //Updates player names
-        int c = 0;
-        foreach (Player p in PhotonNetwork.PlayerList)
-        {
-            c++;
-            
         }
 
         print("Res: " + Screen.width + " " + Screen.height);
@@ -58,15 +78,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         Debug.LogFormat("OnPlayerEnteredRoom() {0}", other.NickName); // not seen if you're the player connecting
         Debug.Log("Ping: " + PhotonNetwork.GetPing());
-        //Updates player names when a new player joins
-        int c = 0;
-        foreach(Player p in PhotonNetwork.PlayerList)
+
+        //Starts game if 2nd player joins
+        if(PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
-            c++;
-            //ScoreboardScript.scoreboardScript.UpdateNameText(c, p.NickName);
+            gameStarted = true;
         }
-
-
         if (PhotonNetwork.IsMasterClient)
         {
             Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom

@@ -38,6 +38,10 @@ MonoBehaviour:
   - RespawnSpaceship
   - CreateProjectile
   - OnBulletBounce
+  - SetNameTagMain
+  - SpawnPlayerMain
+  - PlayerDash
+  - SetAmmoValueMain
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

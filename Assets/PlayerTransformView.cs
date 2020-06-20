@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.UI;
 
 public class PlayerTransformView : MonoBehaviourPunCallbacks, IPunObservable
 {
-    public static float smoothCoeff = 10f;
+    public static float smoothCoeff = 5f;
 
-    public static float lerpCoeff = 2f;
+    public static float lerpCoeff = 0.5f;
 
     private Vector3 currentPos;
     private Vector3 lastPos;
@@ -21,13 +22,15 @@ public class PlayerTransformView : MonoBehaviourPunCallbacks, IPunObservable
 
     float prevTime;
     float currentTime;
+
     void Start()
     {
         if(!photonView.IsMine)
         {
-            //gameObject.GetComponent<BoxCollider2D>().enabled = false;
+            gameObject.layer = 11;
         }
-        PhotonNetwork.SendRate = 20;
+        
+        PhotonNetwork.SendRate = 30;
         PhotonNetwork.SerializationRate = 20;
         currentPos = gameObject.transform.position;
         lastPos = gameObject.transform.position;
