@@ -26,7 +26,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public static NetworkManager networkManager;
 
-    public bool gameStarted = true;
+    public bool gameStarted = false;
+
+    private int playersNeededToStart = 2;
 
     private void Awake()
     {
@@ -48,7 +50,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             GameObject newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
 
             //Sets player at spawn position
-            if (PhotonNetwork.PlayerList.Length == 1)
+            if (PhotonNetwork.PlayerList[0] == PhotonNetwork.LocalPlayer)
             {
                 newPlayer.GetComponent<PlayerNetworkingScript>().SpawnPlayer(p1Spawn.transform.position);
             }
@@ -58,9 +60,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             }
 
             //Starts game if local client is second player
-            if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
+            if (PhotonNetwork.CurrentRoom.PlayerCount == playersNeededToStart)
             {
-                gameStarted = true;
+                StartCoroutine(StartGame());
             }
         }
         
@@ -80,14 +82,21 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Debug.Log("Ping: " + PhotonNetwork.GetPing());
 
         //Starts game if 2nd player joins
-        if(PhotonNetwork.CurrentRoom.PlayerCount == 2)
+        if(PhotonNetwork.CurrentRoom.PlayerCount == playersNeededToStart)
         {
-            gameStarted = true;
+            StartCoroutine(StartGame());
         }
         if (PhotonNetwork.IsMasterClient)
         {
             Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
         }
+    }
+
+    IEnumerator StartGame()
+    {
+        OptionsUIScript.optionsUIScript.GameStartedUI();
+        yield return new WaitForSeconds(5);
+        gameStarted = true;
     }
 
     public override void OnLeftRoom()
@@ -103,11 +112,41 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player other)
     {
-        //ScoreboardScript.scoreboardScript.ShowOpponentDisconnected();
+        gameStarted = false;
+        PlayerMovementScript.LocalPlayerInstance.layer = 11;
+        OptionsUIScript.optionsUIScript.ShowPlayerDisconnectButton();
     }
     public void OnClickOpponentDisconnected()
     {
         LeaveRoom();
         OnLeftRoom();
+    }
+    public void ResetLevel(string levelName)
+    {
+        photonView.RPC("ResetLevelMain", RpcTarget.All, levelName);
+    }
+    [PunRPC]
+    public void ResetLevelMain(string levelName)
+    {
+        PhotonNetwork.LoadLevel(levelName);
+    }
+
+    public void PlayerDeath(string name)
+    {
+        photonView.RPC("PlayerDeathMain", RpcTarget.All, name);
+        StartCoroutine(OnPlayerDeath());
+    }
+
+    IEnumerator OnPlayerDeath()
+    {
+        yield return new WaitForSeconds(5);
+        ResetLevel("TestMap");
+    }
+    [PunRPC]
+    private void PlayerDeathMain(string name)
+    {
+        gameStarted = false;
+        PlayerMovementScript.LocalPlayerInstance.layer = 11;
+        OptionsUIScript.optionsUIScript.ShowDeathMessage(name);
     }
 }

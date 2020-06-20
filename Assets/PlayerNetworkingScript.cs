@@ -10,6 +10,7 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
 
     public Text nameTag;
     public Text ammoTag;
+    public Image reloadBar;
 
     private void Awake()//Sets nametag on player instantiate
     {
@@ -17,6 +18,29 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
             photonView.RPC("SetNameTagMain", RpcTarget.AllBuffered, PhotonNetwork.LocalPlayer.NickName);
     }
 
+    //Player dies when hit by projectile
+    public void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.collider.gameObject.layer == 10)//Is a projectile
+        {
+            StartCoroutine(PlayerHit());           
+        }
+    }
+
+    IEnumerator PlayerHit()
+    {
+        photonView.RPC("PlayDeathEffects", RpcTarget.All);
+        yield return new WaitForSeconds(1f);
+        NetworkManager.networkManager.PlayerDeath(PhotonNetwork.LocalPlayer.NickName);
+    }
+
+    [PunRPC]
+
+    private void PlayDeathEffects()
+    {
+        gameObject.GetComponent<SpriteRenderer>().enabled = false;
+        PlayerParticleManager.playerParticleManager.PlayParticle("DeathParticle");
+    }
 
     [PunRPC]
 
@@ -47,6 +71,18 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
     private void SetAmmoValueMain(int val,int max)
     {
         ammoTag.text = "" + val +"/" + max;
+    }
+
+    public void UpdateReloadBar(float val, float max)
+    {
+        photonView.RPC("UpdateReloadBarMain", RpcTarget.AllBuffered, val, max);
+    }
+
+    [PunRPC]
+
+    private void UpdateReloadBarMain(float val, float max)
+    {
+        reloadBar.transform.localScale = new Vector2(val / max,1);
     }
 
 

@@ -44,7 +44,7 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
 
     public void Update()
     {
-        if(!photonView.IsMine && PhotonNetwork.IsConnected)
+        if((!photonView.IsMine && PhotonNetwork.IsConnected) || !NetworkManager.networkManager.gameStarted)
         {
             return;
         }

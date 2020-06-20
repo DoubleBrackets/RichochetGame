@@ -1,15 +1,17 @@
-﻿using System;
+﻿using Photon.Pun;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerParticleManager : MonoBehaviour
+public class PlayerParticleManager : MonoBehaviourPunCallbacks
 {
     public static PlayerParticleManager playerParticleManager;
 
     private void Awake()
     {
-        playerParticleManager = this;
+        if(photonView.IsMine)
+            playerParticleManager = this;
     }
 
 

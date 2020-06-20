@@ -16,7 +16,7 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
     private static int projectileViewId = 50;
 
 
-    private float shootCooldown = 0.3f;
+    private float shootCooldown = 0.2f;
     private float shootCooldownTimer = 0;
 
     private int ammo = 3;
@@ -36,7 +36,8 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
         if (reloadCooldownTimer > 0)
         {
             reloadCooldownTimer -= Time.deltaTime;
-            if(reloadCooldownTimer <= 0)
+            gameObject.GetComponent<PlayerNetworkingScript>().UpdateReloadBar(reloadCooldownTimer, reloadCooldown);
+            if (reloadCooldownTimer <= 0)
             {
                 ammo = maxAmmo;
                 gameObject.GetComponent<PlayerNetworkingScript>().SetAmmoValue(ammo, maxAmmo);
@@ -54,6 +55,11 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
             shootCooldownTimer = shootCooldown;
             Vector2 dir = GetMouseDir();
             photonView.RPC("CreateProjectile", RpcTarget.All, transform.position + (Vector3)dir.normalized * offSet,speed,(Vector3)dir,photonView.ViewID,(float)PhotonNetwork.Time);
+        }
+        if(Input.GetKeyDown(KeyCode.R) && ammo != maxAmmo && reloadCooldownTimer <= 0)
+        {
+            ammo = 0;
+            reloadCooldownTimer = reloadCooldown;
         }
     }
 
