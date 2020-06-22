@@ -49,6 +49,13 @@ MonoBehaviour:
   - StartGame
   - PlayParticleRPCMain
   - StorePlayerGameobject
+  - PlayerDeath
+  - ShowDeathMessage
+  - SetNameTag
+  - SetAmmoValue
+  - SpawnPlayer
+  - UpdateReloadBar
+  - TryToStartLocalGame
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

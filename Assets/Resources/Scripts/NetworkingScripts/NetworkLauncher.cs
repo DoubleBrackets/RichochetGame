@@ -2,6 +2,9 @@
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
+using System;
+using System.Collections;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class NetworkLauncher : MonoBehaviourPunCallbacks
 {
@@ -83,6 +86,8 @@ public class NetworkLauncher : MonoBehaviourPunCallbacks
 
             // #Critical
             // Load the Room Level.
+
+
             PhotonNetwork.LoadLevel("TestMap");
         }
     }

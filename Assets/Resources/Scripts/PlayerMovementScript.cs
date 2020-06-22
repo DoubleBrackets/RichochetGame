@@ -6,7 +6,6 @@ using Photon.Realtime;
 
 public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
 {
-    public static GameObject LocalPlayerInstance;
     //Components
     
     public Rigidbody2D playerRigidBody;
@@ -37,20 +36,18 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
         playerRigidBody = gameObject.GetComponent<Rigidbody2D>();
         if (photonView.IsMine && PhotonNetwork.IsConnected)
         {
-            LocalPlayerInstance = gameObject;
             CameraScript.cameraScript.cameraSubject = gameObject;
         }
     }
 
     public void Update()
     {
-        if((!photonView.IsMine && PhotonNetwork.IsConnected) || !NetworkManager.networkManager.gameStarted)
+        horizontalInput = (int)Input.GetAxisRaw("Horizontal");
+        verticalInput = (int)Input.GetAxisRaw("Vertical");
+        if ((!photonView.IsMine && PhotonNetwork.IsConnected) || !NetworkManager.networkManager.gameStarted)
         {
             return;
         }
-        horizontalInput = (int)Input.GetAxisRaw("Horizontal");
-        verticalInput = (int)Input.GetAxisRaw("Vertical");
-
         if(dashingCooldownTimer > 0)
         {
             dashingCooldownTimer -= Time.deltaTime;
@@ -97,6 +94,10 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
 
     public void FixedUpdate()
     {
+        if ((!photonView.IsMine && PhotonNetwork.IsConnected) || !NetworkManager.networkManager.gameStarted)
+        {
+            return;
+        }
         Vector2 inputVector = GetInputVector();
         //Horizontal movement
         if(movementActive == 0)
