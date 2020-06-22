@@ -42,13 +42,15 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
 
     public void Update()
     {
-        horizontalInput = (int)Input.GetAxisRaw("Horizontal");
-        verticalInput = (int)Input.GetAxisRaw("Vertical");
-        if ((!photonView.IsMine && PhotonNetwork.IsConnected) || !NetworkManager.networkManager.gameStarted)
+        if (!photonView.IsMine && PhotonNetwork.IsConnected)
         {
             return;
         }
-        if(dashingCooldownTimer > 0)
+        horizontalInput = (int)Input.GetAxisRaw("Horizontal");
+        verticalInput = (int)Input.GetAxisRaw("Vertical");
+        if (!NetworkManager.networkManager.gameStarted)
+            return;
+        if (dashingCooldownTimer > 0)
         {
             dashingCooldownTimer -= Time.deltaTime;
         }
@@ -94,7 +96,7 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
 
     public void FixedUpdate()
     {
-        if ((!photonView.IsMine && PhotonNetwork.IsConnected) || !NetworkManager.networkManager.gameStarted)
+        if (!NetworkManager.networkManager.gameStarted)
         {
             return;
         }

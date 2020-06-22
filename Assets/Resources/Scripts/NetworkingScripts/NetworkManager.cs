@@ -44,7 +44,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             Debug.LogError("<Color=Red><a>Missing</a></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
         }
-        photonView.RPC("TryToStartLocalGame",RpcTarget.All);
+        TryToStartLocalGame();
         print("Res: " + Screen.width + " " + Screen.height);
     }
 
@@ -59,7 +59,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             PlayerNetworkingScript.LocalPlayerInstance = newPlayer;
             SetPlayersBackToSpawn();
             //Starts game if local client is second player
-            if ((!PhotonNetwork.IsMasterClient || playersNeededToStart == 1))
+            if (PhotonNetwork.IsMasterClient)
             {
                 photonView.RPC("StartGame", RpcTarget.AllBufferedViaServer);
             }
@@ -94,6 +94,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         Debug.LogFormat("OnPlayerEnteredRoom() {0}", other.NickName); // not seen if you're the player connecting
         Debug.Log("Ping: " + PhotonNetwork.GetPing());
+        TryToStartLocalGame();
         if (PhotonNetwork.IsMasterClient)
         {
             Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
@@ -168,6 +169,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         OptionsUIScript.optionsUIScript.ShowDeathMessageRPC(PhotonNetwork.LocalPlayer.NickName, false);
         PlayerNetworkingScript.LocalPlayerInstance.layer = 9;
         PlayerNetworkingScript.LocalPlayerInstance.GetComponent<SpriteRenderer>().enabled = true;
+        opponentGameObject.GetComponent<SpriteRenderer>().enabled = true;
     }
 
 
