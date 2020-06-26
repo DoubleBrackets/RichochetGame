@@ -105,14 +105,13 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
         return proj;
 
     }
-    //Instantiating through RPC
+    //Instantiating projectile through RPC for other clients
     [PunRPC]
-    public GameObject CreateProjectile(Vector3 pos, float speed, Vector3 dir,int shooterViewId,int projViewId,float rpcInvokeTime,string sourceNickname)
+    public GameObject CreateProjectile(Vector3 pos, Vector3 dir,int shooterViewId,int projViewId,float rpcInvokeTime,string sourceNickname)
     {
         
         GameObject proj = Instantiate(projPrefab, pos, Quaternion.identity);
         ProjectileScript pScript = proj.GetComponent<ProjectileScript>();
-        pScript.speed = speed;
         proj.GetPhotonView().ViewID = projViewId;
         //Lag compensation
         Vector3 predictedPos = proj.transform.position + dir * Mathf.Max(0,(float)(PhotonNetwork.Time - rpcInvokeTime)/2f);

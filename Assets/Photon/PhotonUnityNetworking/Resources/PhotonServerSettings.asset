@@ -39,24 +39,17 @@ MonoBehaviour:
   - OnBulletBounce
   - PlayDeathEffects
   - PlayerDash
-  - PlayerDeathMain
-  - ResetLevelMain
-  - RespawnSpaceship
-  - SetAmmoValueMain
-  - SetNameTagMain
-  - SpawnPlayerMain
-  - UpdateReloadBarMain
-  - StartGame
   - PlayParticleRPCMain
-  - StorePlayerGameobject
-  - PlayerDeath
-  - ShowDeathMessage
-  - SetNameTag
-  - SetAmmoValue
-  - SpawnPlayer
-  - UpdateReloadBar
-  - TryToStartLocalGame
+  - RespawnSpaceship
   - RoundEnded
+  - SetAmmoValue
+  - SetNameTag
+  - ShowDeathMessage
+  - SpawnPlayer
+  - StartGame
+  - StorePlayerGameobject
+  - TryToStartLocalGame
+  - UpdateReloadBar
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1
