@@ -88,7 +88,7 @@ public class NetworkLauncher : MonoBehaviourPunCallbacks
             // Load the Room Level.
 
 
-            PhotonNetwork.LoadLevel("TestMap");
+            PhotonNetwork.LoadLevel("MainScene");
         }
     }
 

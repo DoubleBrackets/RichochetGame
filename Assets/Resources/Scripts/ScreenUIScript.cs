@@ -5,10 +5,10 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class OptionsUIScript : MonoBehaviourPunCallbacks
+public class ScreenUIScript : MonoBehaviourPunCallbacks
 {
 
-    public static OptionsUIScript optionsUIScript;
+    public static ScreenUIScript screenUIScript;
     public GameObject disconnectButton;
 
     public GameObject playerDisconnectedButton;
@@ -21,13 +21,21 @@ public class OptionsUIScript : MonoBehaviourPunCallbacks
     public GameObject deathScreen;
     public Text deathMessage;
 
+    //Score
+    public Text localPlayerScoreText;
+    public Text otherPlayerScoreText;
+
+    //Game end screen
+    public GameObject gameEndScreen;
+    public Text gameEndText;
+
     //in case of lag
     private bool hasPlayedDeathScreen = false;
 
     bool isOptionsMenuActive = false;
     void Awake()
     {
-        optionsUIScript = this;
+        screenUIScript = this;
         disconnectButton.SetActive(false);
     }
 
@@ -80,4 +88,22 @@ public class OptionsUIScript : MonoBehaviourPunCallbacks
         deathScreen.SetActive(val);
     }
 
+    public void UpdateScoreboard(int localPlayerScore, int opposingPlayerScore)
+    {
+        localPlayerScoreText.text = "" + localPlayerScore + " <";
+        otherPlayerScoreText.text = "> " + opposingPlayerScore;
+    }
+
+    public void ShowGameEndScreen(bool didLocalPlayerWin)
+    {
+        gameEndScreen.SetActive(true);
+        if (didLocalPlayerWin)
+        {
+            gameEndText.text = "U Win :>";
+        }
+        else
+        {
+            gameEndText.text = "U Lose :<";
+        }
+    }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ScreenShakeScript : MonoBehaviour
 {
-    private float shakeForce = 80f;
+    private float shakeForce = 90f;
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.layer == 10)//Checks if is projectile

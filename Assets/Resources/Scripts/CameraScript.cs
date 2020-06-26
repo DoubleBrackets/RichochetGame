@@ -39,94 +39,25 @@ public class CameraScript : MonoBehaviour
         {
             
             Vector2 targetpos = cameraSubject.transform.position;
+            //if bounds are active, clamp targetPos to the bounds
+            if (followBounds)
+            {
+                float aspRatio = (float)Screen.width / Screen.height;
+                float screenWidthBound = _camera.orthographicSize * aspRatio;
+                float screenHeightBound = _camera.orthographicSize;
+
+                float boundXPos = Mathf.Clamp(targetpos.x, leftBound + screenWidthBound, rightBound - screenWidthBound);
+                float boundYPos = Mathf.Clamp(targetpos.y, lowerBound + screenHeightBound, upperBound - screenHeightBound);
+
+                targetpos = new Vector2(boundXPos, boundYPos);
+            }
             float dist = (targetpos - (Vector2)transform.position).magnitude;
             newPosition = Vector2.Lerp(transform.position, targetpos,(0.45f + dist) * Time.deltaTime);
-
-/*            float yForce = cameraSubject.GetComponent<Rigidbody2D>().velocity.y;
-            if (cameraSubject.GetComponent<Rigidbody2D>().velocity.y > 0)
-            {
-                yForce /= 4f;
-            }
-            cameraRb.AddForce(new Vector2(cameraSubject.GetComponent<Rigidbody2D>().velocity.x * 0.5f, yForce));*/
         }
         else if(cameraMode == 1)//No smooth camera, just normal cam
         {
             newPosition = cameraSubject.transform.position;
         }
-        //if bounds are active, ensures camera doesn't leave bounds
-        if(followBounds && cameraMode == 0)
-        {
-            float aspRatio = (float)Screen.width / Screen.height;
-            float screenWidthBound = _camera.orthographicSize * aspRatio;
-            float screenHeightBound = _camera.orthographicSize;
-
-            float xPos = newPosition.x;
-            float yPos = newPosition.y;
-            //Dampens camera movement near boundary
-            
-            float yVec = newPosition.y - transform.position.y;
-            float xVec = newPosition.x - transform.position.x;
-
-            //If closer to lower bound
-            if(upperBound - (transform.position.y + screenHeightBound) > transform.position.y - screenHeightBound - lowerBound)
-            {
-                if(yVec < 0)//If camera is moving downwards
-                {
-                    float yRatio = (5-(transform.position.y - screenHeightBound - lowerBound))/5;
-                    //Dampen
-                    yPos = Mathf.Lerp(yPos, transform.position.y, yRatio);
-                }
-            }
-            else//Closer to upper bound
-            {
-                if (yVec > 0)//If camera is moving upwards
-                {
-                    float yRatio = (5 - (upperBound - (transform.position.y + screenHeightBound))) / 5;
-                    //Dampen
-                    yPos = Mathf.Lerp(yPos, transform.position.y, yRatio);
-                }
-            }
-
-            //If closer to left bound
-            if (rightBound - (transform.position.x + screenWidthBound) > transform.position.x - screenWidthBound - leftBound)
-            {
-                if (xVec < 0)//If camera is moving downwards
-                {
-                    float xRatio = (5 - (transform.position.x - screenWidthBound - leftBound)) / 5;
-                    //Dampen
-                    xPos = Mathf.Lerp(xPos, transform.position.x, xRatio);
-                }
-            }
-            else//Closer to right bound
-            {
-                if (xVec > 0)//If camera is moving right
-                {
-                    float xRatio = (5 - (rightBound - (transform.position.x + screenWidthBound))) / 5;
-                    //Dampen
-                    xPos = Mathf.Lerp(xPos, transform.position.x, xRatio);
-                }
-            }
-            //clamping to bounds
-            if (xPos + screenWidthBound > rightBound)
-                xPos = rightBound - screenWidthBound;
-            else if (xPos - screenWidthBound < leftBound)
-                xPos = leftBound + screenWidthBound;
-            if (yPos + screenHeightBound > upperBound)
-                yPos = upperBound - screenHeightBound;
-            else if (yPos - screenHeightBound < lowerBound)
-                yPos = lowerBound + screenHeightBound;
-
-            if (boundTransitionTimer > 0)//IF transitioning bounds
-             {
-                xPos = Mathf.Lerp(gameObject.transform.position.x, xPos, 3f * Time.deltaTime);
-                //yPos = Mathf.Lerp(gameObject.transform.position.y, yPos, 4f * Time.deltaTime);
-                boundTransitionTimer -= Time.deltaTime;
-            }
-
-            newPosition = new Vector2(xPos, yPos);
-          
-        }
-
         transform.position = newPosition;
         gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, -10f);
 

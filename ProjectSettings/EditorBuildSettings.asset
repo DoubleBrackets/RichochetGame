@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/RichochetMainMenu.unity
     guid: 08438cd7d455b15479db8fa1ced0b969
   - enabled: 1
-    path: Assets/Scenes/TestMap.unity
+    path: Assets/Scenes/MainScene.unity
     guid: 1d6284acfc4ceaa47a1f5cf868dcb1cb
   m_configObjects: {}

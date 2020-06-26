@@ -13,7 +13,7 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 
     private Vector2 savedVelocityOnBounce;
 
-    private float bounceDelay = 0.25f;
+    private float bounceDelay = 0.27f;
 
     private float bounceRandomness = 5f;//Degrees of randomness when bouncing
 

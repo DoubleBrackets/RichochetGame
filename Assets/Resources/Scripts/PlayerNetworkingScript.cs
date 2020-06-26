@@ -26,7 +26,6 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
         if(photonView.IsMine)
         {
             photonView.RPC("SetNameTag", RpcTarget.AllBuffered, PhotonNetwork.LocalPlayer.NickName);
-            trackingArrow.SetActive(true);
         }
     }
 
@@ -35,7 +34,7 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
         if (!NetworkManager.networkManager.gameStarted || NetworkManager.networkManager.opponentGameObject == null || !photonView.IsMine)
             return;
         Vector2 arrowDir = NetworkManager.networkManager.opponentGameObject.transform.position - gameObject.transform.position;
-        if(arrowDir.magnitude <= arrowOffset+10f)
+        if(arrowDir.magnitude <= 50f)
         {
             trackingArrow.SetActive(false);
         }
@@ -62,7 +61,7 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
         photonView.RPC("PlayDeathEffects", RpcTarget.All, PhotonNetwork.LocalPlayer.NickName);
         NetworkManager.networkManager.PlayerDeathRPC(PhotonNetwork.LocalPlayer.NickName);
         yield return new WaitForSeconds(1.5f);
-        OptionsUIScript.optionsUIScript.ShowDeathMessageRPC(PhotonNetwork.LocalPlayer.NickName,true);
+        ScreenUIScript.screenUIScript.ShowDeathMessageRPC(PhotonNetwork.LocalPlayer.NickName,true);
     }
 
     [PunRPC]
@@ -119,6 +118,9 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
     {
         reloadBar.transform.localScale = new Vector2(val / max,1);
     }
+
+
+
 
 
 }

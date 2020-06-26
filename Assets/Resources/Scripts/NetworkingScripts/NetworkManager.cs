@@ -20,7 +20,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     /// 
 
     public GameObject playerPrefab;
-
     public GameObject opponentGameObject;
 
     public GameObject p1Spawn;
@@ -31,6 +30,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public bool gameStarted = false;
 
     private int playersNeededToStart = 2;
+
+    private int currentRound = 1;
+    private int numberOfRounds = 5;
+
+    private int numberOfRoundsWon = 0;
 
 
     private void Awake()
@@ -100,15 +104,27 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
         }
     }
+
     [PunRPC]
 
     private void StartGame()
     {
+        if(currentRound != 1)//Resetting level only runs if not first round
+        {
+            SetPlayersBackToSpawn();
+            PlayerNetworkingScript.LocalPlayerInstance.GetComponent<PlayerShootingScript>().ResetAmmo();
+            ScreenUIScript.screenUIScript.ShowDeathMessageRPC(PhotonNetwork.LocalPlayer.NickName, false);
+            PlayerNetworkingScript.LocalPlayerInstance.layer = 9;
+            PlayerNetworkingScript.LocalPlayerInstance.GetComponent<SpriteRenderer>().enabled = true;
+            opponentGameObject.GetComponent<SpriteRenderer>().enabled = true;
+
+        }
+
         StartCoroutine(StartGameMain());
     }
     IEnumerator StartGameMain()
     {
-        OptionsUIScript.optionsUIScript.GameStartedUI();
+        ScreenUIScript.screenUIScript.GameStartedUI();
         yield return new WaitForSeconds(5);
         gameStarted = true;
     }
@@ -128,34 +144,69 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         gameStarted = false;
         PlayerNetworkingScript.LocalPlayerInstance.layer = 11;
-        OptionsUIScript.optionsUIScript.ShowPlayerDisconnectButton();
+        ScreenUIScript.screenUIScript.ShowPlayerDisconnectButton();
     }
     public void OnClickOpponentDisconnected()
     {
         LeaveRoom();
         OnLeftRoom();
     }
+
+    #region Player death and round resetting
+
     //Local method, run when local player dies
     public void PlayerDeathRPC(string name)
     {
-        photonView.RPC("PlayerDeath", RpcTarget.All, name);
+        photonView.RPC("RoundEnded", RpcTarget.All, name);
     }
 
     [PunRPC]
-    private void PlayerDeath(string name)
+    private void RoundEnded(string name)
     {
         gameStarted = false;
         PlayerNetworkingScript.LocalPlayerInstance.layer = 11;
         PlayerNetworkingScript.LocalPlayerInstance.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        bool localPlayerWonRound = name.CompareTo(PhotonNetwork.LocalPlayer.NickName) != 0;
+        //Checks if game ended
+        if (CheckForGameEnd(localPlayerWonRound))
+        {
+            return;
+        }
+        //Prepare to reset map and start new round otherwise
         StartCoroutine(PrepareToResetMap());
+    }
+
+    private bool CheckForGameEnd(bool wonRound)
+    {
+        if (wonRound)
+        {
+            numberOfRoundsWon++;
+        }
+        currentRound++;
+
+        int enemyRoundsWon = currentRound - numberOfRoundsWon - 1;
+
+        bool isWinning = (enemyRoundsWon < numberOfRoundsWon);
+
+        ScreenUIScript.screenUIScript.UpdateScoreboard(numberOfRoundsWon, enemyRoundsWon);
+        //end game if round limit reached or player has won Best of (rounds), otherwise start a new round
+        if (currentRound == numberOfRounds + 1 || numberOfRoundsWon > numberOfRounds / 2 + 1 || currentRound - numberOfRoundsWon > numberOfRounds / 2 + 1)
+        {
+            StartCoroutine(EndMatch(isWinning));
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     IEnumerator PrepareToResetMap()
     {
         yield return new WaitForSeconds(6);
-        ResetLevel("TestMap");
+        ResetLevel();
     }
 
-    public void ResetLevel(string levelName)
+    public void ResetLevel()
     {
         //Cleans up projectiles
         GameObject[] projectiles = GameObject.FindGameObjectsWithTag("Projectile");
@@ -163,14 +214,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             Destroy(p);
         }
-        SetPlayersBackToSpawn();
-        PlayerNetworkingScript.LocalPlayerInstance.GetComponent<PlayerShootingScript>().ResetAmmo();
-        photonView.RPC("StartGame", RpcTarget.AllBufferedViaServer);
-        OptionsUIScript.optionsUIScript.ShowDeathMessageRPC(PhotonNetwork.LocalPlayer.NickName, false);
-        PlayerNetworkingScript.LocalPlayerInstance.layer = 9;
-        PlayerNetworkingScript.LocalPlayerInstance.GetComponent<SpriteRenderer>().enabled = true;
-        opponentGameObject.GetComponent<SpriteRenderer>().enabled = true;
+
+        StartGame();
+        
     }
 
+    private IEnumerator EndMatch(bool didLocalPlayerWin)
+    {
+        ScreenUIScript.screenUIScript.ShowGameEndScreen(didLocalPlayerWin);
+        yield return new WaitForSeconds(5f);
+        PhotonNetwork.LeaveRoom();
+    }
 
+    #endregion
 }
