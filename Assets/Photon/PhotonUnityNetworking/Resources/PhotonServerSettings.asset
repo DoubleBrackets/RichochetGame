@@ -50,6 +50,7 @@ MonoBehaviour:
   - StorePlayerGameobject
   - TryToStartLocalGame
   - UpdateReloadBar
+  - PlayParticle
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

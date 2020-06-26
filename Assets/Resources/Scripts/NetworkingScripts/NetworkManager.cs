@@ -22,9 +22,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public GameObject playerPrefab;
     public GameObject opponentGameObject;
 
-    public GameObject p1Spawn;
-    public GameObject p2Spawn;
-
     public static NetworkManager networkManager;
 
     public bool gameStarted = false;
@@ -32,9 +29,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     private int playersNeededToStart = 2;
 
     private int currentRound = 1;
-    private int numberOfRounds = 5;
+    private int numberOfRounds = 7;
 
     private int numberOfRoundsWon = 0;
+
+    public GameObject[] mapCollection;//Map prefabs to load in
+
+    private GameObject currentMap;
 
 
     private void Awake()
@@ -61,11 +62,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
             GameObject newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
             PlayerNetworkingScript.LocalPlayerInstance = newPlayer;
-            SetPlayersBackToSpawn();
             //Starts game if local client is second player
             if (PhotonNetwork.IsMasterClient)
             {
-                photonView.RPC("StartGame", RpcTarget.AllBufferedViaServer);
+                photonView.RPC("StartGame", RpcTarget.AllBufferedViaServer,GetRandomMapIndex());
             }
             //Sends player gameobject to other client
             photonView.RPC("StorePlayerGameobject", RpcTarget.OthersBuffered, newPlayer.GetPhotonView().ViewID);
@@ -74,16 +74,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         return false;
     }
 
-    private void SetPlayersBackToSpawn()
+    private void SetPlayersBackToSpawn(Vector3 p1Spawn, Vector3 p2Spawn)
     {
         //Sets player at spawn position
         if (PhotonNetwork.PlayerList[0] == PhotonNetwork.LocalPlayer)
         {
-            PlayerNetworkingScript.LocalPlayerInstance.GetComponent<PlayerNetworkingScript>().SpawnPlayerRPC(p1Spawn.transform.position);
+            PlayerNetworkingScript.LocalPlayerInstance.GetComponent<PlayerNetworkingScript>().SpawnPlayerRPC(p1Spawn);
         }
         else
         {
-            PlayerNetworkingScript.LocalPlayerInstance.GetComponent<PlayerNetworkingScript>().SpawnPlayerRPC(p2Spawn.transform.position);
+            PlayerNetworkingScript.LocalPlayerInstance.GetComponent<PlayerNetworkingScript>().SpawnPlayerRPC(p2Spawn);
         }
     }
 
@@ -107,19 +107,22 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     [PunRPC]
 
-    private void StartGame()
+    private void StartGame(int nextMapIndex)
     {
         if(currentRound != 1)//Resetting level only runs if not first round
         {
-            SetPlayersBackToSpawn();
             PlayerNetworkingScript.LocalPlayerInstance.GetComponent<PlayerShootingScript>().ResetAmmo();
             ScreenUIScript.screenUIScript.ShowDeathMessageRPC(PhotonNetwork.LocalPlayer.NickName, false);
             PlayerNetworkingScript.LocalPlayerInstance.layer = 9;
             PlayerNetworkingScript.LocalPlayerInstance.GetComponent<SpriteRenderer>().enabled = true;
-            opponentGameObject.GetComponent<SpriteRenderer>().enabled = true;
-
+            if(opponentGameObject != null)
+                opponentGameObject.GetComponent<SpriteRenderer>().enabled = true;
+            Destroy(currentMap);
         }
-
+        //Loads new map
+        currentMap = Instantiate(mapCollection[nextMapIndex], Vector2.zero, Quaternion.identity);
+        MapScript mScript = currentMap.GetComponent<MapScript>();
+        SetPlayersBackToSpawn(mScript.p1Spawn.transform.position,mScript.p2Spawn.transform.position);
         StartCoroutine(StartGameMain());
     }
     IEnumerator StartGameMain()
@@ -157,11 +160,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     //Local method, run when local player dies
     public void PlayerDeathRPC(string name)
     {
-        photonView.RPC("RoundEnded", RpcTarget.All, name);
+
+        photonView.RPC("RoundEnded", RpcTarget.All, name,GetRandomMapIndex());
     }
 
+    private int GetRandomMapIndex()
+    {
+        int length = mapCollection.Length;
+        //Randomly selects new map
+        return UnityEngine.Random.Range(0, length);
+    }
     [PunRPC]
-    private void RoundEnded(string name)
+    private void RoundEnded(string name,int nextMapIndex)
     {
         gameStarted = false;
         PlayerNetworkingScript.LocalPlayerInstance.layer = 11;
@@ -173,7 +183,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             return;
         }
         //Prepare to reset map and start new round otherwise
-        StartCoroutine(PrepareToResetMap());
+        StartCoroutine(PrepareToResetMap(nextMapIndex));
     }
 
     private bool CheckForGameEnd(bool wonRound)
@@ -190,7 +200,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         ScreenUIScript.screenUIScript.UpdateScoreboard(numberOfRoundsWon, enemyRoundsWon);
         //end game if round limit reached or player has won Best of (rounds), otherwise start a new round
-        if (currentRound == numberOfRounds + 1 || numberOfRoundsWon > numberOfRounds / 2 + 1 || currentRound - numberOfRoundsWon > numberOfRounds / 2 + 1)
+        if (currentRound == numberOfRounds + 1 || numberOfRoundsWon > numberOfRounds / 2|| currentRound - numberOfRoundsWon > numberOfRounds / 2 + 1)
         {
             StartCoroutine(EndMatch(isWinning));
             return true;
@@ -200,13 +210,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             return false;
         }
     }
-    IEnumerator PrepareToResetMap()
+    IEnumerator PrepareToResetMap(int nextMapIndex)
     {
         yield return new WaitForSeconds(6);
-        ResetLevel();
+        ResetLevel(nextMapIndex);
     }
 
-    public void ResetLevel()
+    public void ResetLevel(int nextMapIndex)
     {
         //Cleans up projectiles
         GameObject[] projectiles = GameObject.FindGameObjectsWithTag("Projectile");
@@ -215,7 +225,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             Destroy(p);
         }
 
-        StartGame();
+        StartGame(nextMapIndex);
         
     }
 

@@ -8,6 +8,8 @@ public class PlayerParticleScript : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     public string particleId;
 
+    private bool setParticleId = false;
+
     public bool usePlayerNickname = true;
 
     ParticleSystem pSys;
@@ -20,10 +22,6 @@ public class PlayerParticleScript : MonoBehaviourPunCallbacks
         PlayerParticleManager.playerParticleManager.setParticleActiveEvent += SetActive;
         PlayerParticleManager.playerParticleManager.playParticleEvent += Play;
         PlayerParticleManager.playerParticleManager.stopParticleEvent += Stop;
-        if(usePlayerNickname)
-        {
-            particleId = particleId + gameObject.GetComponentInParent<PlayerNetworkingScript>().nickName;
-        }
     }
 
 
@@ -46,6 +44,14 @@ public class PlayerParticleScript : MonoBehaviourPunCallbacks
 
     void Play(string _id)
     {
+        if(!setParticleId)
+        {
+            setParticleId = true;
+            if (usePlayerNickname)
+            {
+                particleId = particleId + gameObject.GetComponentInParent<PlayerNetworkingScript>().nickName;
+            }
+        }
         if (_id.CompareTo(particleId) == 0)
         {
             pSys.Play();

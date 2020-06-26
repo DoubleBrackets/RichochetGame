@@ -17,19 +17,15 @@ public class PlayerParticleManager : MonoBehaviourPunCallbacks
 
     //Event system for player particles
     public event Action<String> playParticleEvent;
-    public void PlayParticle(string _id)
-    {
-        playParticleEvent?.Invoke(_id);
-    }
+
 
     public void PlayParticleRPC(string _id)
     {
-        photonView.RPC("PlayParticleRPCMain", RpcTarget.All, _id);
+        photonView.RPC("PlayParticle", RpcTarget.All, _id);
     }
 
     [PunRPC]
-
-    private void PlayParticleRPCMain(string _id)
+    public void PlayParticle(string _id)
     {
         playParticleEvent?.Invoke(_id);
     }
