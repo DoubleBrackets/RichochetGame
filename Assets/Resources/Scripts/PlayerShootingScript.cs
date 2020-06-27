@@ -17,13 +17,17 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
     private float shootCooldown = 0.2f;
     private float shootCooldownTimer = 0;
 
-    private int ammo = 3;
-    private int maxAmmo = 3;
+    private int ammo;
+    public int maxAmmo;
 
-    private float reloadCooldown = 2f;
+    public float reloadCooldown;
     private float reloadCooldownTimer = 0;
 
-    private float recoilForce = 45f;
+    public float recoilForce;
+    private void Awake()
+    {
+        ResetAmmo();
+    }
 
     void Update()
     {

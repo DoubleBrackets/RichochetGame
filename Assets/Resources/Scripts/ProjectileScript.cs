@@ -13,7 +13,7 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 
     private Vector2 savedVelocityOnBounce;
 
-    private float bounceDelay = 0.27f;
+    public float bounceDelay;
 
     private float bounceRandomness = 5f;//Degrees of randomness when bouncing
 
@@ -26,6 +26,8 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 
     private float radius;
 
+    private Vector3 bounceLocation;
+
     private void Awake()
     {
         widthMult = lineRen.widthMultiplier;
@@ -35,14 +37,16 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        Vector2 currentVel = rigidBody.velocity;
         onCollisionParticles.Play();
-        if(!PhotonNetwork.IsMasterClient || !NetworkManager.networkManager.gameStarted)//if not master client, then wait for bounce position/vel from master client
+        transform.position = bounceLocation;
+        transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(currentVel.y,currentVel.x)*Mathf.Rad2Deg);
+        if (!PhotonNetwork.IsMasterClient || !NetworkManager.networkManager.gameStarted)//if not master client, then wait for bounce position/vel from master client
         {
-            transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(Vector2.zero,rigidBody.velocity) + 90f);
             rigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
             return;
         }
-        photonView.RPC("OnBulletBounce",RpcTarget.All,transform.position,(Vector3)rigidBody.velocity,bounceDelay,(float)PhotonNetwork.Time);
+        photonView.RPC("OnBulletBounce",RpcTarget.All,transform.position,(Vector3)currentVel, bounceDelay,(float)PhotonNetwork.Time);
     }
     [PunRPC]
     public void OnBulletBounce(Vector3 position, Vector3 vel,float delay,float sendTime)
@@ -57,11 +61,9 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 
         transform.position = position;
         savedVelocityOnBounce = vel;
-        float angle = Mathf.Rad2Deg * Mathf.Atan2(savedVelocityOnBounce.y, savedVelocityOnBounce.x) + 1;
+        float angle = Mathf.Rad2Deg * Mathf.Atan2(savedVelocityOnBounce.y, savedVelocityOnBounce.x)+0.5f;
         savedVelocityOnBounce = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * speed;
 
-        //Rotates to face direction of travel
-        transform.rotation = Quaternion.Euler(0, 0, angle + 90f);
         rigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
         //Creates line indicator
         
@@ -71,7 +73,8 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
         {
             lineRen.widthMultiplier = widthMult;
             lineRen.enabled = true;
-            lineRen.SetPosition(1, rayCast.point);
+            lineRen.SetPosition(1, rayCast.centroid);
+            bounceLocation = rayCast.centroid-savedVelocityOnBounce.normalized*radius;
         }
         float reduction = 0;
         if (!PhotonNetwork.IsMasterClient)

@@ -19,7 +19,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     /// </summary>
     /// 
 
-    public GameObject playerPrefab;
     public GameObject opponentGameObject;
 
     public static NetworkManager networkManager;
@@ -35,6 +34,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public GameObject[] mapCollection;//Map prefabs to load in
 
+    private string[] characterCollection = { "BasicCharacter", "SniperCharacter" };//Character prefabs
+
     private GameObject currentMap;
 
 
@@ -45,7 +46,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        if (playerPrefab == null)
+        if (characterCollection == null)
         {
             Debug.LogError("<Color=Red><a>Missing</a></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
         }
@@ -60,7 +61,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManager.GetActiveScene());
             // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-            GameObject newPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
+            int characterToInstantiate = PlayerPrefs.GetInt("SelectedCharacter");
+            GameObject newPlayer = PhotonNetwork.Instantiate(characterCollection[characterToInstantiate], new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
             PlayerNetworkingScript.LocalPlayerInstance = newPlayer;
             //Starts game if local client is second player
             if (PhotonNetwork.IsMasterClient)

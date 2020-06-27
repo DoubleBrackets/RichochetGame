@@ -92,4 +92,10 @@ public class NetworkLauncher : MonoBehaviourPunCallbacks
         }
     }
 
+    public void SelectCharacter(int val)
+    {
+        PlayerPrefs.SetInt("SelectedCharacter", val);
+        PlayerPrefs.Save();
+    }
+
 }
