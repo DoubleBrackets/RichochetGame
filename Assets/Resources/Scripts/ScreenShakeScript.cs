@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class ScreenShakeScript : MonoBehaviour
 {
-    private float shakeForce = 90f;
 
     private void Awake()
     {
@@ -16,6 +15,7 @@ public class ScreenShakeScript : MonoBehaviour
     {
         if(collision.gameObject.layer == 10)//Checks if is projectile
         {
+            float shakeForce = collision.gameObject.GetComponent<ProjectileScript>().screenShakeMagnitude;
             Vector2 dir = collision.gameObject.GetComponent<Rigidbody2D>().velocity.normalized;
             CameraScript.cameraScript.CameraShake(dir,shakeForce);
         }

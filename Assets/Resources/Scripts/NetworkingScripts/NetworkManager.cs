@@ -61,7 +61,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManager.GetActiveScene());
             // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-            int characterToInstantiate = PlayerPrefs.GetInt("SelectedCharacter");
+            int characterToInstantiate = PlayerPrefs.GetInt("SelectedCharacter",0);
             GameObject newPlayer = PhotonNetwork.Instantiate(characterCollection[characterToInstantiate], new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
             PlayerNetworkingScript.LocalPlayerInstance = newPlayer;
             //Starts game if local client is second player

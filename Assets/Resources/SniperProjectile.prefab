@@ -4883,11 +4883,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3df3fe1ce559b5240b65389d2f2ad8c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 160
+  speed: 130
   rigidBody: {fileID: 2858641826381259748}
   lineRen: {fileID: -4052281492880148128}
   onCollisionParticles: {fileID: 4064268727877295547}
-  bounceDelay: 0.42
+  bounceDelay: 0.35
+  screenShakeMagnitude: 90
   indicatorRaycastMask:
     serializedVersion: 2
     m_Bits: 256
@@ -4969,16 +4970,16 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0, g: 0.17391205, b: 1, a: 1}
-      key1: {r: 0.5058824, g: 1, b: 0.72389096, a: 0.7411765}
-      key2: {r: 0.89434564, g: 0.5058824, b: 1, a: 0}
+      key0: {r: 0.33490568, g: 0.6505042, b: 1, a: 1}
+      key1: {r: 0, g: 1, b: 0.6843002, a: 1}
+      key2: {r: 0.92993367, g: 1, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
       key6: {r: 0, g: 0, b: 0, a: 0}
       key7: {r: 0, g: 0, b: 0, a: 0}
       ctime0: 0
-      ctime1: 65535
+      ctime1: 46838
       ctime2: 65535
       ctime3: 0
       ctime4: 0
@@ -4986,8 +4987,8 @@ LineRenderer:
       ctime6: 0
       ctime7: 0
       atime0: 0
-      atime1: 65535
-      atime2: 0
+      atime1: 40478
+      atime2: 65535
       atime3: 0
       atime4: 0
       atime5: 0
@@ -5278,7 +5279,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.4
+      scalar: 0.55
       minScalar: 1
       maxCurve:
         serializedVersion: 2

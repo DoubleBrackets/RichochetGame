@@ -4,31 +4,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class DevTestUI : MonoBehaviour
+public class DevTestUI : MonoBehaviourPunCallbacks
 {
     public static DevTestUI devTestUI;
 
-    public InputField smoothCoeffField;
-    public InputField lerpCoeffField;
+    public Text ping;
+
     private void Awake()
     {
         devTestUI = this;
     }
 
-    public void SetSmoothingCoeff()
+    private void Update()
     {
-        float res;
-        res = float.Parse(smoothCoeffField.text);
-        PlayerTransformView.smoothCoeff = res;
-        print("smooth coeff set to " + res);
+        ping.text ="Ping: "+ PhotonNetwork.GetPing() + " ms";
     }
 
-    public void SetLerpCoeff()
-    {
-        float res;
-        res = float.Parse(lerpCoeffField.text);
-        PlayerTransformView.lerpCoeff = res;
-        print("lerp coeff set to " + res);
-    }
 }
