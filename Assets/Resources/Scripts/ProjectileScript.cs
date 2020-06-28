@@ -7,6 +7,7 @@ using Photon.Realtime;
 public class ProjectileScript : MonoBehaviourPunCallbacks
 {
     public float speed;
+    public float speedAfterBounce;
     public Rigidbody2D rigidBody;
     public LineRenderer lineRen;
     public ParticleSystem onCollisionParticles;
@@ -39,6 +40,7 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        speed = speedAfterBounce;
         Vector2 currentVel = rigidBody.velocity;
         onCollisionParticles.Play();
         transform.position = bounceLocation;
@@ -88,9 +90,9 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 
         isInBounce = false;
         //Line fadeout animation
-        for(int x = 0;x <= 20;x++)
+        for(int x = 0;x <= 10;x++)
         { 
-            lineRen.widthMultiplier = widthMult*(1 - x / 20f);
+            lineRen.widthMultiplier = widthMult*(1 - x / 10f);
             yield return new WaitForFixedUpdate();
             if (isInBounce == true)
             {

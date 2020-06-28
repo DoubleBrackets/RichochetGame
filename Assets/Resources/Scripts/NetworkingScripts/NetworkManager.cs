@@ -35,7 +35,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public GameObject[] mapCollection;//Map prefabs to load in
 
     private string[] characterCollection = { "BasicCharacter", "SniperCharacter" };//Character prefabs
-
+     
     private GameObject currentMap;
 
 
