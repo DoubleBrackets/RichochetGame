@@ -15,6 +15,8 @@ public class MapScript : MonoBehaviour
 
     private void Start()
     {
+        //centering
+        mapTarget.transform.position = new Vector2(rightBound.transform.position.x + leftBound.transform.position.x, upperBound.transform.position.y + lowerBound.transform.position.y) / 2f;
         //Calculating camera size
         float aspRatio = (float)Screen.width / Screen.height;
         float minCameraWidth = rightBound.transform.position.x - leftBound.transform.position.x;

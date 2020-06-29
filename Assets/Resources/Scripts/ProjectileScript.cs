@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using Photon.Pun.Demo.Asteroids;
 
 public class ProjectileScript : MonoBehaviourPunCallbacks
 {
@@ -11,6 +12,8 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
     public Rigidbody2D rigidBody;
     public LineRenderer lineRen;
     public ParticleSystem onCollisionParticles;
+    public ParticleSystem onBreakParticles;
+    private ParticleSystem bulletParticle;
 
     private Vector2 savedVelocityOnBounce;
 
@@ -36,9 +39,11 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
+        bulletParticle = gameObject.GetComponent<ParticleSystem>();
         widthMult = lineRen.widthMultiplier;
         radius = gameObject.GetComponent<Collider2D>().bounds.extents.x;
         onCollisionParticles.Stop();
+        onBreakParticles.Stop();
         bounceCounter = numberOfBounces+1;
     }
 
@@ -91,7 +96,11 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(Mathf.Max(0,delay- reduction));
         if (bounceCounter == 0)
         {
-            Destroy(this.gameObject);
+            bulletParticle.Stop();
+            onBreakParticles.Play();
+            gameObject.GetComponent<Collider2D>().enabled = false;
+            Destroy(this.gameObject,0.5f);
+            yield break;
         }
         rigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 

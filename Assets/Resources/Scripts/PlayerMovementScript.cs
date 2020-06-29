@@ -30,8 +30,6 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
     private float dashingCooldown = 1f;
     private float dashingCooldownTimer = 0;
 
-    private bool mouseAimDash = true;
-
 
     private void Awake()
     {
@@ -56,19 +54,22 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
         {
             dashingCooldownTimer -= Time.deltaTime;
         }
-        if(photonView.IsMine && Input.GetMouseButtonDown(1) && dashingCooldownTimer <= 0)
+
+        if(GetInputVector()!=Vector2.zero)
+            dashVector = GetInputVector();
+        if (photonView.IsMine && dashingCooldownTimer <= 0)
         {
-            dashingCooldownTimer = dashingCooldown;
             //Gets dash vector
-            if (mouseAimDash)
+            if ((Input.GetMouseButtonDown(1)))
             {
                 dashVector = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
                 dashVector = dashVector / (dashVector.magnitude);
             }
-            else
+            else if (!Input.GetKeyDown(KeyCode.LeftShift))
             {
-                dashVector = GetInputVector();
+                return;
             }
+            dashingCooldownTimer = dashingCooldown;
             photonView.RPC("PlayerDash",RpcTarget.All,(Vector3)dashVector);
         }
     }
