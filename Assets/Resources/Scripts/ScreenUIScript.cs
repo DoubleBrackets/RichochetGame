@@ -16,6 +16,7 @@ public class ScreenUIScript : MonoBehaviourPunCallbacks
     public GameObject waitingForOpponentImage;
 
     public Text countDownText;
+    public Text mapnameText;
 
     //Death UI
     public GameObject deathScreen;
@@ -54,20 +55,22 @@ public class ScreenUIScript : MonoBehaviourPunCallbacks
         playerDisconnectedButton.SetActive(true);
     }
 
-    public void GameStartedUI()
+    public void GameStartedUI(string mapName)
     {
         waitingForOpponentImage.SetActive(false);
-        StartCoroutine(CountDown());
+        StartCoroutine(CountDown(mapName));
     }
 
-    private IEnumerator CountDown()
+    private IEnumerator CountDown(string mapName)
     {
+        mapnameText.text ="Map: " + mapName;
         for(int x = 5;x > 0;x--)
         {
             countDownText.text = "" + x;
             yield return new WaitForSeconds(1);
         }
         countDownText.text = "";
+        mapnameText.text = "";
     }
     public void ShowDeathMessageRPC(string name,bool val)
     {

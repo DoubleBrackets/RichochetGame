@@ -10188,7 +10188,7 @@ MonoBehaviour:
   muzzleFlashObject: {fileID: 130903020205587704}
   screenShakeTrigger: {fileID: 2208765472081284031}
   maxAmmo: 1
-  reloadCooldown: 2
+  reloadCooldown: 1.3
   recoilForce: 100
 --- !u!114 &3746803060001354423
 MonoBehaviour:

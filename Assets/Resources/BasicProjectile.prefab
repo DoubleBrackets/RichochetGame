@@ -4883,8 +4883,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3df3fe1ce559b5240b65389d2f2ad8c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 80
-  speedAfterBounce: 55
+  speed: 85
+  speedAfterBounce: 70
   rigidBody: {fileID: 2858641826381259748}
   lineRen: {fileID: -4052281492880148128}
   onCollisionParticles: {fileID: 4064268727877295547}
@@ -4893,6 +4893,7 @@ MonoBehaviour:
   indicatorRaycastMask:
     serializedVersion: 2
     m_Bits: 256
+  numberOfBounces: 7
 --- !u!58 &2858641826381259745
 CircleCollider2D:
   m_ObjectHideFlags: 0

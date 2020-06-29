@@ -6,4 +6,6 @@ public class MapScript : MonoBehaviour
 {
     public GameObject p1Spawn;
     public GameObject p2Spawn;
+
+    public string mapName;
 }

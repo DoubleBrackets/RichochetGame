@@ -31,11 +31,15 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 
     private Vector3 bounceLocation;
 
+    public int numberOfBounces = 2;
+    private int bounceCounter;
+
     private void Awake()
     {
         widthMult = lineRen.widthMultiplier;
         radius = gameObject.GetComponent<Collider2D>().bounds.extents.x;
         onCollisionParticles.Stop();
+        bounceCounter = numberOfBounces+1;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -55,6 +59,7 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
     [PunRPC]
     public void OnBulletBounce(Vector3 position, Vector3 vel,float delay,float sendTime)
     {
+        bounceCounter--;
         StartCoroutine(OnBulletBounceMain(position, vel, delay,sendTime));
     }
 
@@ -73,7 +78,7 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
         
         lineRen.SetPosition(0, transform.position);
         RaycastHit2D rayCast = Physics2D.CircleCast(transform.position, radius,savedVelocityOnBounce, 1000f,indicatorRaycastMask);
-        if(rayCast.collider != null)
+        if(rayCast.collider != null && bounceCounter != 0)
         {
             lineRen.widthMultiplier = widthMult;
             lineRen.enabled = true;
@@ -84,6 +89,10 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsMasterClient)
             reduction = (float)PhotonNetwork.Time - rpcSendTime;
         yield return new WaitForSeconds(Mathf.Max(0,delay- reduction));
+        if (bounceCounter == 0)
+        {
+            Destroy(this.gameObject);
+        }
         rigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         rigidBody.velocity = savedVelocityOnBounce;

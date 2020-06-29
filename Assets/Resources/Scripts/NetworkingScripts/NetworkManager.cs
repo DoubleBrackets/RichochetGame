@@ -125,11 +125,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         currentMap = Instantiate(mapCollection[nextMapIndex], Vector2.zero, Quaternion.identity);
         MapScript mScript = currentMap.GetComponent<MapScript>();
         SetPlayersBackToSpawn(mScript.p1Spawn.transform.position,mScript.p2Spawn.transform.position);
-        StartCoroutine(StartGameMain());
+        StartCoroutine(StartGameMain(mScript.mapName));
     }
-    IEnumerator StartGameMain()
+    IEnumerator StartGameMain(String mapName)
     {
-        ScreenUIScript.screenUIScript.GameStartedUI();
+        ScreenUIScript.screenUIScript.GameStartedUI(mapName);
         yield return new WaitForSeconds(5);
         gameStarted = true;
     }
