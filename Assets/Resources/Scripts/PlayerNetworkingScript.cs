@@ -21,16 +21,22 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
     public GameObject trackingArrow;
     private float arrowOffset = 15f;
 
+    public Image positionArrow;
+
     private void Awake()//Sets nametag on player instantiate
     {
-        if(photonView.IsMine)
+        if (photonView.IsMine)
         {
             photonView.RPC("SetNameTag", RpcTarget.AllBuffered, PhotonNetwork.LocalPlayer.NickName);
+            positionArrow.enabled = true;
         }
+        else
+            positionArrow.enabled = false;
     }
 
     private void Update()
     {
+        /*
         if (!NetworkManager.networkManager.gameStarted || NetworkManager.networkManager.opponentGameObject == null || !photonView.IsMine)
             return;
         Vector2 arrowDir = NetworkManager.networkManager.opponentGameObject.transform.position - gameObject.transform.position;
@@ -45,6 +51,7 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
         float angle = Mathf.Rad2Deg*Mathf.Atan2(arrowDir.y, arrowDir.x);
         trackingArrow.transform.position = (Vector2)transform.position + (arrowDir.normalized)*arrowOffset;
         trackingArrow.transform.rotation = Quaternion.Euler(0, 0, angle);
+        */
     }
 
     //Player dies when hit by projectile

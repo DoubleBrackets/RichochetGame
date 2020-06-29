@@ -6,7 +6,7 @@ public class AimIndicatorScript : MonoBehaviour
 {
     LineRenderer lineRen;
 
-    private float distance = 200f;
+    private float distance = 100f;
 
     private void Awake()
     {
@@ -23,7 +23,7 @@ public class AimIndicatorScript : MonoBehaviour
         Vector2 dir = ((Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) - playerPos).normalized;
 
         lineRen.positionCount = 2;
-        lineRen.SetPosition(0, ((Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition))-dir*10f);
+        lineRen.SetPosition(0, ((Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition))-dir*5f);
         lineRen.SetPosition(1, playerPos + dir*distance);
     }
 }

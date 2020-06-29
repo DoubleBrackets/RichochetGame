@@ -49,9 +49,9 @@ TagManager:
   - name: Player
     uniqueID: 1836819207
     locked: 0
-  - name: Projectiles
-    uniqueID: 769049055
-    locked: 0
   - name: Indicators
     uniqueID: 1411351565
+    locked: 0
+  - name: Projectiles
+    uniqueID: 769049055
     locked: 0
