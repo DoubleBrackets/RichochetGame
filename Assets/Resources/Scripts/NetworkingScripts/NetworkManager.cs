@@ -25,7 +25,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public bool gameStarted = false;
 
-    private int playersNeededToStart = 2;
+    public int playersNeededToStart;
 
     private int currentRound = 1;
     private int numberOfRounds = 7;

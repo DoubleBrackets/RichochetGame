@@ -90,9 +90,9 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 
         isInBounce = false;
         //Line fadeout animation
-        for(int x = 0;x <= 10;x++)
+        for(int x = 0;x <= 20;x++)
         { 
-            lineRen.widthMultiplier = widthMult*(1 - x / 10f);
+            lineRen.widthMultiplier = widthMult*(1 - x / 20f);
             yield return new WaitForFixedUpdate();
             if (isInBounce == true)
             {

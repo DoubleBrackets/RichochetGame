@@ -4883,12 +4883,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3df3fe1ce559b5240b65389d2f2ad8c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 150
-  speedAfterBounce: 115
+  speed: 155
+  speedAfterBounce: 100
   rigidBody: {fileID: 2858641826381259748}
   lineRen: {fileID: -4052281492880148128}
   onCollisionParticles: {fileID: 4064268727877295547}
-  bounceDelay: 0.35
+  bounceDelay: 0.1
   screenShakeMagnitude: 90
   indicatorRaycastMask:
     serializedVersion: 2
