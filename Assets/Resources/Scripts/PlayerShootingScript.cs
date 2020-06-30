@@ -14,7 +14,7 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
 
     public Collider2D screenShakeTrigger;
 
-    private float shootCooldown = 0.2f;
+    public float shootCooldown = 0.2f;
     private float shootCooldownTimer = 0;
 
     private int ammo;
@@ -24,9 +24,13 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
     private float reloadCooldownTimer = 0;
 
     public float recoilForce;
+
+    public int numberOfBulletsPerShot = 1;
+    public float bulletSpread = 0;
     private void Awake()
     {
         ResetAmmo();
+        bulletSpread *= Mathf.Deg2Rad;
     }
 
     void Update()
@@ -77,16 +81,24 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
 
     private void ShootProjectile()
     {
-        Vector2 dir = GetMouseDir();
+        Vector2 mouseDir = GetMouseDir();
+        float targetAngle = Mathf.Atan2(mouseDir.y, mouseDir.x);
         //Screen jerk recoil
-        CameraScript.cameraScript.CameraShake(-dir, recoilForce);
-
+        CameraScript.cameraScript.CameraShake(-mouseDir, recoilForce);
+        //spread values for multiple shots
+        float startAngleOffset = -bulletSpread / 2f;
+        float spreadIncr = bulletSpread / (Mathf.Max(2,numberOfBulletsPerShot)-1);
         //Creates local projectile first
-        GameObject newProj = CreateProjectile(transform.position + (Vector3)dir.normalized * offSet, dir);
-        PhotonView pView = newProj.GetPhotonView();
-        PhotonNetwork.AllocateViewID(pView);
-        //Sends rpc to other client to create projectile
-        photonView.RPC("CreateProjectile", RpcTarget.Others, transform.position + (Vector3)dir.normalized * offSet, (Vector3)dir, photonView.ViewID, pView.ViewID,(float)PhotonNetwork.Time,PhotonNetwork.LocalPlayer.NickName);
+        for (int x = 0;x < numberOfBulletsPerShot;x++)
+        {
+            float currentAngle = targetAngle + startAngleOffset + spreadIncr * x;
+            Vector2 dir = new Vector2(Mathf.Cos(currentAngle), Mathf.Sin(currentAngle));
+            GameObject newProj = CreateProjectile(transform.position + (Vector3)dir.normalized * offSet, dir);
+            PhotonView pView = newProj.GetPhotonView();
+            PhotonNetwork.AllocateViewID(pView);
+            //Sends rpc to other client to create projectile
+            photonView.RPC("CreateProjectile", RpcTarget.Others, transform.position + (Vector3)dir.normalized * offSet, (Vector3)dir, photonView.ViewID, pView.ViewID, (float)PhotonNetwork.Time, PhotonNetwork.LocalPlayer.NickName);
+        }    
     }
 
     //Instantiating local projectile

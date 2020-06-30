@@ -666,9 +666,25 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1857875068854529232, guid: b40fe5b484147b94892e6829aa51c854,
         type: 3}
+      propertyPath: mapCollection.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1857875068854529232, guid: b40fe5b484147b94892e6829aa51c854,
+        type: 3}
       propertyPath: playersNeededToStart
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1857875068854529232, guid: b40fe5b484147b94892e6829aa51c854,
+        type: 3}
+      propertyPath: gameStarted
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1857875068854529232, guid: b40fe5b484147b94892e6829aa51c854,
+        type: 3}
+      propertyPath: mapCollection.Array.data[4]
+      value: 
+      objectReference: {fileID: 1171850161359995914, guid: cd715cef65b97404f90122ae732d7084,
+        type: 3}
     - target: {fileID: 1857875068854529262, guid: b40fe5b484147b94892e6829aa51c854,
         type: 3}
       propertyPath: m_Name

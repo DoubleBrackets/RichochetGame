@@ -9,6 +9,10 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 {
     public float speed;
     public float speedAfterBounce;
+    public bool slowdownAfterShot = false;
+    public float slowdownInterval = 0f;
+    public bool slowdownAfterBounce = true;
+
     public Rigidbody2D rigidBody;
     public LineRenderer lineRen;
     public ParticleSystem onCollisionParticles;
@@ -49,7 +53,8 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        speed = speedAfterBounce;
+        if(slowdownAfterBounce)
+            speed = speedAfterBounce;
         Vector2 currentVel = rigidBody.velocity;
         onCollisionParticles.Play();
         transform.position = bounceLocation;
@@ -64,10 +69,30 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
     [PunRPC]
     public void OnBulletBounce(Vector3 position, Vector3 vel,float delay,float sendTime)
     {
+        if (slowdownAfterShot)
+        {
+            slowdownAfterShot = false;
+            StartCoroutine(ShotSlowdown());
+        }
         bounceCounter--;
         StartCoroutine(OnBulletBounceMain(position, vel, delay,sendTime));
     }
 
+    IEnumerator ShotSlowdown()
+    {
+        float initialSpeed = speed;
+        float currentTime = Time.time;
+        float startTime = Time.time;
+        do
+        {
+            currentTime = Time.time;
+            speed = initialSpeed - ((currentTime - startTime)/slowdownInterval) * (initialSpeed - speedAfterBounce);
+            rigidBody.velocity = rigidBody.velocity.normalized * speed;
+            yield return new WaitForFixedUpdate();
+        } while (currentTime - startTime <= slowdownInterval);
+        speed = speedAfterBounce;
+        rigidBody.velocity = rigidBody.velocity.normalized * speed;
+    }
 
     private IEnumerator OnBulletBounceMain(Vector3 position, Vector3 vel, float delay,float rpcSendTime)
     {

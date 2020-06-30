@@ -1041,7 +1041,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   opponentGameObject: {fileID: 0}
   gameStarted: 0
-  playersNeededToStart: 1
+  playersNeededToStart: 2
   mapCollection:
   - {fileID: 1171850161359995914, guid: 0e9e7d01585a0404da8a905b186ff2ed, type: 3}
   - {fileID: 1171850161359995914, guid: e1f443a369495914db43d737f30fb138, type: 3}
