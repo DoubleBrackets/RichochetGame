@@ -9696,10 +9696,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3df3fe1ce559b5240b65389d2f2ad8c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 105
-  speedAfterBounce: 45
+  speed: 115
+  speedAfterBounce: 42.5
   slowdownAfterShot: 1
-  slowdownInterval: 1
+  slowdownInterval: 0.5
   slowdownAfterBounce: 0
   rigidBody: {fileID: 2858641826381259748}
   lineRen: {fileID: -4052281492880148128}
