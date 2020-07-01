@@ -67,7 +67,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             //Starts game if local client is second player
             if (PhotonNetwork.IsMasterClient)
             {
-                photonView.RPC("StartGame", RpcTarget.AllBufferedViaServer,GetRandomMapIndex());
+                photonView.RPC("StartRound", RpcTarget.AllBufferedViaServer,GetRandomMapIndex());
             }
             //Sends player gameobject to other client
             photonView.RPC("StorePlayerGameobject", RpcTarget.OthersBuffered, newPlayer.GetPhotonView().ViewID);
@@ -109,11 +109,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     [PunRPC]
 
-    private void StartGame(int nextMapIndex)
+    private void StartRound(int nextMapIndex)
     {
         if(currentRound != 1)//Resetting level only runs if not first round
         {
             PlayerNetworkingScript.LocalPlayerInstance.GetComponent<PlayerShootingScript>().ResetAmmo();
+            if(PlayerNetworkingScript.LocalPlayerInstance.GetComponent<ToggleAbilityClass>() != null)
+                PlayerNetworkingScript.LocalPlayerInstance.GetComponent<ToggleAbilityClass>().ResetResourceValue();
             ScreenUIScript.screenUIScript.ShowDeathMessageRPC(PhotonNetwork.LocalPlayer.NickName, false);
             PlayerNetworkingScript.LocalPlayerInstance.layer = 9;
             PlayerNetworkingScript.LocalPlayerInstance.GetComponent<SpriteRenderer>().enabled = true;
@@ -125,9 +127,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         currentMap = Instantiate(mapCollection[nextMapIndex], Vector2.zero, Quaternion.identity);
         MapScript mScript = currentMap.GetComponent<MapScript>();
         SetPlayersBackToSpawn(mScript.p1Spawn.transform.position,mScript.p2Spawn.transform.position);
-        StartCoroutine(StartGameMain(mScript.mapName));
+        StartCoroutine(StartRoundMain(mScript.mapName));
     }
-    IEnumerator StartGameMain(String mapName)
+    IEnumerator StartRoundMain(String mapName)
     {
         ScreenUIScript.screenUIScript.GameStartedUI(mapName);
         yield return new WaitForSeconds(5);
@@ -227,7 +229,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             Destroy(p);
         }
 
-        StartGame(nextMapIndex);
+        StartRound(nextMapIndex);
         
     }
 

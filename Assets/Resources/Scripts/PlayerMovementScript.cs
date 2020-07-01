@@ -7,7 +7,7 @@ using Photon.Realtime;
 public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
 {
     //Components
-    
+
     public Rigidbody2D playerRigidBody;
 
     //Input vars
@@ -17,6 +17,8 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
     //Movement vars
     public float moveSpeed;
     private float movementForce = 200f;
+
+    private float movementBonus = 0f;
 
     //States
     private int movementActive = 0;
@@ -29,6 +31,8 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
 
     private float dashingCooldown = 1f;
     private float dashingCooldownTimer = 0;
+
+
 
 
     private void Awake()
@@ -55,7 +59,7 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
             dashingCooldownTimer -= Time.deltaTime;
         }
 
-        if(GetInputVector()!=Vector2.zero)
+        if (GetInputVector() != Vector2.zero)
             dashVector = GetInputVector();
         if (photonView.IsMine && dashingCooldownTimer <= 0)
         {
@@ -65,12 +69,12 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
                 dashVector = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
                 dashVector = dashVector / (dashVector.magnitude);
             }
-            else if (!Input.GetKeyDown(KeyCode.LeftShift))
+            else if (!(Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Space)))
             {
                 return;
             }
             dashingCooldownTimer = dashingCooldown;
-            photonView.RPC("PlayerDash",RpcTarget.All,(Vector3)dashVector);
+            photonView.RPC("PlayerDash", RpcTarget.All, (Vector3)dashVector);
         }
     }
 
@@ -88,16 +92,16 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
 
         playerRigidBody.velocity = dashVector * dashMagnitude;
 
-        if(photonView.IsMine)
+        if (photonView.IsMine)
             gameObject.layer = 11;
-        
+
         yield return new WaitForSeconds(0.3f);
         slowdownActive--;
         movementActive--;
 
         yield return new WaitForSeconds(0.1f);
-        playerRigidBody.velocity/= 5f;
-        if(photonView.IsMine)
+        playerRigidBody.velocity /= 5f;
+        if (photonView.IsMine)
             gameObject.layer = 9;
         yield return new WaitForSeconds(0.05f);
 
@@ -112,27 +116,27 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
         }
         Vector2 inputVector = GetInputVector();
         //Horizontal movement
-        if(movementActive == 0)
+        if (movementActive == 0)
         {
             float yVelAfterForce = playerRigidBody.velocity.y + (movementForce * inputVector.y / playerRigidBody.mass) * Time.fixedDeltaTime;
             float xVelAfterForce = playerRigidBody.velocity.x + (movementForce * inputVector.x / playerRigidBody.mass) * Time.fixedDeltaTime;
 
             Vector2 velAfterForce = new Vector2(xVelAfterForce, yVelAfterForce);
-            if(velAfterForce.magnitude <= moveSpeed)//If force does not go over movespeed, apply force 
+            if (velAfterForce.magnitude <= moveSpeed + movementBonus)//If force does not go over movespeed, apply force 
             {
                 playerRigidBody.velocity = velAfterForce;
             }
             else//Otherwise directly set velocity
             {
                 if (verticalInput != 0)
-                    SetYVelocity(inputVector.y * moveSpeed);
+                    SetYVelocity(inputVector.y * (moveSpeed + movementBonus));
                 if (horizontalInput != 0)
-                    SetXVelocity(inputVector.x * moveSpeed);
+                    SetXVelocity(inputVector.x * (moveSpeed + movementBonus));
             }
         }
         //Slowdown
         bool _slowDownActive = (movementActive > 0);
-        if(slowdownActive == 0)
+        if (slowdownActive == 0)
         {
             if (horizontalInput == 0 || _slowDownActive)
                 SetXVelocity(playerRigidBody.velocity.x * 0.75f);
@@ -153,13 +157,24 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
         }
         else
         {
-            horizontalInput =(int) stream.ReceiveNext();
+            horizontalInput = (int)stream.ReceiveNext();
             verticalInput = (int)stream.ReceiveNext();
             //isDashing = (bool)stream.ReceiveNext();
             //dashVector = (Vector3)stream.ReceiveNext();
         }
     }
 
+    public void ChangeMovementBonusRPC(float val)
+    {
+        photonView.RPC("ChangeMovementBonus", RpcTarget.All, val);
+    }
+
+    [PunRPC]
+
+    private void ChangeMovementBonus(float val)
+    {
+        movementBonus = val;
+    }
 
     public Vector2 GetInputVector()
     {

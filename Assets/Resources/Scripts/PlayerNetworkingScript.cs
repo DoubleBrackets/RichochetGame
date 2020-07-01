@@ -15,6 +15,8 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
     public Text ammoTag;
     public Image reloadBar;
 
+    public Image resourceBar;
+
     public string nickName;
 
     //Tracking arrow 
@@ -125,8 +127,6 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
     {
         reloadBar.transform.localScale = new Vector2(val / max,1);
     }
-
-
 
 
 

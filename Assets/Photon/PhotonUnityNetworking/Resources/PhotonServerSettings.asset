@@ -51,6 +51,14 @@ MonoBehaviour:
   - TryToStartLocalGame
   - UpdateReloadBar
   - PlayParticle
+  - ChangeMovementBonus
+  - SetResourceBarValue
+  - UpdateResourceBar
+  - UpdateResourceBarColor
+  - StopParticle
+  - ToggleOn
+  - ToggleOff
+  - StartRound
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

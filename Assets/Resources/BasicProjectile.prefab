@@ -9698,6 +9698,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 90
   speedAfterBounce: 75
+  slowdownAfterShot: 0
+  slowdownInterval: 0
+  slowdownAfterBounce: 1
   rigidBody: {fileID: 2858641826381259748}
   lineRen: {fileID: -4052281492880148128}
   onCollisionParticles: {fileID: 4064268727877295547}
@@ -9707,7 +9710,7 @@ MonoBehaviour:
   indicatorRaycastMask:
     serializedVersion: 2
     m_Bits: 256
-  numberOfBounces: 7
+  numberOfBounces: 6
 --- !u!58 &2858641826381259745
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -9723,7 +9726,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.3
+  m_Radius: 0.25
 --- !u!120 &-4052281492880148128
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -9768,7 +9771,7 @@ LineRenderer:
   - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.2
+    widthMultiplier: 0.17
     widthCurve:
       serializedVersion: 2
       m_Curve:

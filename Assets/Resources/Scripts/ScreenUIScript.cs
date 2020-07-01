@@ -18,6 +18,10 @@ public class ScreenUIScript : MonoBehaviourPunCallbacks
     public Text countDownText;
     public Text mapnameText;
 
+    //Resource bar
+
+    public Image resourceBar;
+
     //Death UI
     public GameObject deathScreen;
     public Text deathMessage;
@@ -108,5 +112,17 @@ public class ScreenUIScript : MonoBehaviourPunCallbacks
         {
             gameEndText.text = "U Lose :<";
         }
+    }
+
+
+    public void UpdateResourceBar(float val, float max)
+    {
+        resourceBar.transform.localScale = new Vector2(1,val / max);
+    }
+
+
+    public void UpdateResourceBarColor(Color c)
+    {
+        resourceBar.color = c;
     }
 }

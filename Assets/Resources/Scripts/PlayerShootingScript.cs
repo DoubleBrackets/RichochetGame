@@ -7,7 +7,8 @@ using UnityEngine.UI;
 
 public class PlayerShootingScript : MonoBehaviourPunCallbacks
 {
-    private float offSet = 0f;
+
+    private float offSet;
 
     public GameObject projPrefab;
     public GameObject muzzleFlashObject;
@@ -16,6 +17,8 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
 
     public float shootCooldown = 0.2f;
     private float shootCooldownTimer = 0;
+
+    public float speedModifier = 0;
 
     private int ammo;
     public int maxAmmo;
@@ -151,7 +154,8 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
     {
         Physics2D.IgnoreCollision(c1, proj, true);
         Physics2D.IgnoreCollision(screenShakeTrigger, proj, true);
-        yield return new WaitForSeconds(0.2f);
+        for(int x = 0;x < 3;x++)
+            yield return new WaitForFixedUpdate();
         Physics2D.IgnoreCollision(c1, proj, false);
         Physics2D.IgnoreCollision(screenShakeTrigger, proj, false);
     }

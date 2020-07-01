@@ -13,11 +13,14 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
     public float slowdownInterval = 0f;
     public bool slowdownAfterBounce = true;
 
+    private float deAccelRate = 0;//For slowdown
+
     public Rigidbody2D rigidBody;
     public LineRenderer lineRen;
     public ParticleSystem onCollisionParticles;
     public ParticleSystem onBreakParticles;
     private ParticleSystem bulletParticle;
+    private Collider2D coll;
 
     private Vector2 savedVelocityOnBounce;
 
@@ -29,35 +32,41 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 
     private bool isInBounce = false;
 
-    public LayerMask indicatorRaycastMask;
+    private LayerMask indicatorRaycastMask;
     private float widthMult;
 
     private float startTime;
 
     private float radius;
 
-    private Vector3 bounceLocation;
+    private Vector2 projectileBounceVector;
 
     public int numberOfBounces = 2;
     private int bounceCounter;
 
     private void Awake()
     {
+        if(slowdownAfterShot)
+        {
+            deAccelRate = (speed - speedAfterBounce) / slowdownInterval;
+        }
         bulletParticle = gameObject.GetComponent<ParticleSystem>();
         widthMult = lineRen.widthMultiplier;
-        radius = gameObject.GetComponent<Collider2D>().bounds.extents.x;
+        coll = gameObject.GetComponent<Collider2D>();
+        radius = coll.bounds.extents.x;
         onCollisionParticles.Stop();
         onBreakParticles.Stop();
         bounceCounter = numberOfBounces+1;
+        indicatorRaycastMask = LayerMask.GetMask(new string[]{"Terrain" });
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionReached()
     {
+
         if(slowdownAfterBounce)
             speed = speedAfterBounce;
-        Vector2 currentVel = rigidBody.velocity;
         onCollisionParticles.Play();
-        transform.position = bounceLocation;
+        Vector2 currentVel = projectileBounceVector;
         transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(currentVel.y,currentVel.x)*Mathf.Rad2Deg);
         if (!PhotonNetwork.IsMasterClient || !NetworkManager.networkManager.gameStarted)//if not master client, then wait for bounce position/vel from master client
         {
@@ -78,21 +87,6 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
         StartCoroutine(OnBulletBounceMain(position, vel, delay,sendTime));
     }
 
-    IEnumerator ShotSlowdown()
-    {
-        float initialSpeed = speed;
-        float currentTime = Time.time;
-        float startTime = Time.time;
-        do
-        {
-            currentTime = Time.time;
-            speed = initialSpeed - ((currentTime - startTime)/slowdownInterval) * (initialSpeed - speedAfterBounce);
-            rigidBody.velocity = rigidBody.velocity.normalized * speed;
-            yield return new WaitForFixedUpdate();
-        } while (currentTime - startTime <= slowdownInterval);
-        speed = speedAfterBounce;
-        rigidBody.velocity = rigidBody.velocity.normalized * speed;
-    }
 
     private IEnumerator OnBulletBounceMain(Vector3 position, Vector3 vel, float delay,float rpcSendTime)
     {
@@ -100,25 +94,25 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 
         transform.position = position;
         savedVelocityOnBounce = vel;
-        float angle = Mathf.Rad2Deg * Mathf.Atan2(savedVelocityOnBounce.y, savedVelocityOnBounce.x)+0.5f;
-        savedVelocityOnBounce = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * speed;
 
         rigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
-        //Creates line indicator
-        
+        //Calculates bounce
+
         lineRen.SetPosition(0, transform.position);
-        RaycastHit2D rayCast = Physics2D.CircleCast(transform.position, radius,savedVelocityOnBounce, 1000f,indicatorRaycastMask);
-        if(rayCast.collider != null && bounceCounter != 0)
+        RaycastHit2D rayCast = Physics2D.Raycast(transform.position, vel, 1000f, indicatorRaycastMask);
+        if (rayCast.collider != null && bounceCounter != 0)
         {
             lineRen.widthMultiplier = widthMult;
             lineRen.enabled = true;
-            lineRen.SetPosition(1, rayCast.centroid);
-            bounceLocation = rayCast.centroid-savedVelocityOnBounce.normalized*radius;
+            lineRen.SetPosition(1, rayCast.point - (Vector2)vel.normalized*radius);
+            projectileBounceVector = Vector2.Reflect(vel, rayCast.normal);//Saves the vector for when it bounces next
         }
         float reduction = 0;
         if (!PhotonNetwork.IsMasterClient)
             reduction = (float)PhotonNetwork.Time - rpcSendTime;
         yield return new WaitForSeconds(Mathf.Max(0,delay- reduction));
+
+        //Destroy projectile if bounce limit reached
         if (bounceCounter == 0)
         {
             bulletParticle.Stop();
@@ -129,7 +123,7 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
         }
         rigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
-        rigidBody.velocity = savedVelocityOnBounce;
+        StartCoroutine(StartProjectilePath(savedVelocityOnBounce, rayCast.point - (Vector2)vel.normalized * radius));
 
         isInBounce = false;
         //Line fadeout animation
@@ -144,5 +138,53 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
         }
         lineRen.widthMultiplier = widthMult;
         lineRen.enabled = false;
+    }
+
+    IEnumerator StartProjectilePath(Vector2 vel,Vector2 target)//Uses raycasts as a guide for the projectiles path, times when projectile would normally collide with terrain
+    {
+        int bounceCounterLocal = bounceCounter;
+        rigidBody.velocity = savedVelocityOnBounce.normalized * speed;
+        Vector2 diff = target - (Vector2)transform.position;
+        if (slowdownInterval == 0)
+        {            
+            float time = diff.magnitude / speed;
+            yield return new WaitForSeconds(time);
+            if (bounceCounterLocal != bounceCounter)//Master client projectiles take priority
+                yield break;
+            transform.position = target;
+            OnCollisionReached();
+        }
+        else
+        {
+            Vector2 startPos = transform.position;
+            float diffMag = diff.magnitude;
+            while(true)
+            {
+                if (((Vector2)transform.position - startPos).magnitude >= diffMag)
+                    break;
+                yield return new WaitForFixedUpdate();
+            }
+            if (bounceCounterLocal != bounceCounter)//Master client projectiles take priority
+                yield break;
+            transform.position = target;
+            OnCollisionReached();
+        }
+    }
+
+    IEnumerator ShotSlowdown()
+    {
+        float initialSpeed = speed;
+        float currentTime = Time.time;
+        float startTime = Time.time;
+        do
+        {
+            currentTime = Time.time;
+            speed = initialSpeed - ((currentTime - startTime) / slowdownInterval) * (initialSpeed - speedAfterBounce);
+            rigidBody.velocity = rigidBody.velocity.normalized * speed;
+            yield return new WaitForFixedUpdate();
+        } while (currentTime - startTime <= slowdownInterval);
+        speed = speedAfterBounce;
+        rigidBody.velocity = rigidBody.velocity.normalized * speed;
+        slowdownInterval = 0;
     }
 }

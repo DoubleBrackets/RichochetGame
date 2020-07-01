@@ -9696,10 +9696,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3df3fe1ce559b5240b65389d2f2ad8c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 115
+  speed: 130
   speedAfterBounce: 42.5
   slowdownAfterShot: 1
-  slowdownInterval: 0.5
+  slowdownInterval: 0.35
   slowdownAfterBounce: 0
   rigidBody: {fileID: 2858641826381259748}
   lineRen: {fileID: -4052281492880148128}
@@ -9707,9 +9707,6 @@ MonoBehaviour:
   onBreakParticles: {fileID: 5544610119934028934}
   bounceDelay: 0.1
   screenShakeMagnitude: 50
-  indicatorRaycastMask:
-    serializedVersion: 2
-    m_Bits: 256
   numberOfBounces: 3
 --- !u!58 &2858641826381259745
 CircleCollider2D:
@@ -9726,7 +9723,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.35
+  m_Radius: 0.3
 --- !u!120 &-4052281492880148128
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -9771,7 +9768,7 @@ LineRenderer:
   - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.2
+    widthMultiplier: 0.17
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -9789,7 +9786,7 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0.6886792, g: 0.51577586, b: 0.51001245, a: 0.48235294}
+      key0: {r: 0.6901961, g: 0.6843791, b: 0.50980395, a: 0.48235294}
       key1: {r: 0.9433962, g: 0.8950169, b: 0.7075472, a: 1}
       key2: {r: 1, g: 0, b: 0.9011407, a: 1}
       key3: {r: 0, g: 0, b: 0, a: 0}
