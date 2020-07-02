@@ -10,8 +10,7 @@ public class PlayerParticleManager : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        if(photonView.IsMine)
-            playerParticleManager = this;
+        playerParticleManager = this;
     }
 
 

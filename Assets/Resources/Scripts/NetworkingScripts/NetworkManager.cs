@@ -100,7 +100,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         Debug.LogFormat("OnPlayerEnteredRoom() {0}", other.NickName); // not seen if you're the player connecting
         Debug.Log("Ping: " + PhotonNetwork.GetPing());
-        TryToStartLocalGame();
+        Invoke("TryToStartLocalGame",2f);
         if (PhotonNetwork.IsMasterClient)
         {
             Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom

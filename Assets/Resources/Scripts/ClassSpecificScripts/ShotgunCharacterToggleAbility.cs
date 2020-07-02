@@ -58,7 +58,7 @@ public class ShotgunCharacterToggleAbility : ToggleAbilityClass, IPunObservable
     {
         PlayerShootingScript pShootScript = gameObject.GetComponent<PlayerShootingScript>();
         PlayerMovementScript playerMovementScript = gameObject.GetComponent<PlayerMovementScript>();
-        if (NetworkManager.networkManager.gameStarted)
+        if (NetworkManager.networkManager.gameStarted && photonView.IsMine)
             gameObject.layer = 9;
         pShootScript.DecrementCanShoot();
         playerMovementScript.DecrementSlowdownActive();
