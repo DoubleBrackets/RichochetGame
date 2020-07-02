@@ -119,7 +119,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             ScreenUIScript.screenUIScript.ShowDeathMessageRPC(PhotonNetwork.LocalPlayer.NickName, false);
             PlayerNetworkingScript.LocalPlayerInstance.layer = 9;
             PlayerNetworkingScript.LocalPlayerInstance.GetComponent<SpriteRenderer>().enabled = true;
-            if(opponentGameObject != null)
+            PlayerNetworkingScript.SetIsHit(false);
+            if (opponentGameObject != null)
                 opponentGameObject.GetComponent<SpriteRenderer>().enabled = true;
             Destroy(currentMap);
         }
@@ -164,7 +165,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     //Local method, run when local player dies
     public void PlayerDeathRPC(string name)
     {
-        photonView.RPC("RoundEnded", RpcTarget.All, name,GetRandomMapIndex());
+        photonView.RPC("RoundEnded", RpcTarget.AllViaServer, name,GetRandomMapIndex());
     }
 
     private int GetRandomMapIndex()
@@ -176,6 +177,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RoundEnded(string name,int nextMapIndex)
     {
+        if (gameStarted == false)
+            return;
         gameStarted = false;
         PlayerNetworkingScript.LocalPlayerInstance.layer = 11;
         PlayerNetworkingScript.LocalPlayerInstance.GetComponent<Rigidbody2D>().velocity = Vector2.zero;

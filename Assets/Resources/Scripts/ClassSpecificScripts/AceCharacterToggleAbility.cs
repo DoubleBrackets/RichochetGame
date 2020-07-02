@@ -24,12 +24,12 @@ public class AceCharacterToggleAbility : ToggleAbilityClass
             if(resourceValue >= toggleThreshholdValue && !isToggleActive)
             {
                 isToggleActive = true;
-                photonView.RPC("ToggleOn", RpcTarget.AllViaServer);
+                photonView.RPC("ToggleOn", RpcTarget.AllViaServer,PhotonNetwork.LocalPlayer.NickName);
             }
         }
     }
     [PunRPC]
-    protected override void ToggleOn()
+    protected override void ToggleOn(string name)
     {
         PlayerShootingScript pShootScript = gameObject.GetComponent<PlayerShootingScript>();
         PlayerMovementScript playerMovementScript = gameObject.GetComponent<PlayerMovementScript>();
@@ -38,16 +38,16 @@ public class AceCharacterToggleAbility : ToggleAbilityClass
         playerMovementScript.ChangeMovementBonusRPC(movementBonus);
         pShootScript.reloadCooldown = baseReloadSpeed - reloadBonus;
         pShootScript.shootCooldown = baseShootCooldown - shootCooldownBonus;
-        PlayerParticleManager.playerParticleManager.PlayParticle(playerParticleKey + PhotonNetwork.LocalPlayer.NickName);
+        PlayerParticleManager.playerParticleManager.PlayParticle(playerParticleKey + name);
     }
     [PunRPC]
-    protected override void ToggleOff()
+    protected override void ToggleOff(string name)
     {
         PlayerShootingScript pShootScript = gameObject.GetComponent<PlayerShootingScript>();
         PlayerMovementScript playerMovementScript = gameObject.GetComponent<PlayerMovementScript>();
         playerMovementScript.ChangeMovementBonusRPC(0);
         pShootScript.reloadCooldown = baseReloadSpeed;
         pShootScript.shootCooldown = baseShootCooldown;
-        PlayerParticleManager.playerParticleManager.StopParticle(playerParticleKey + PhotonNetwork.LocalPlayer.NickName);
+        PlayerParticleManager.playerParticleManager.StopParticle(playerParticleKey + name);
     }
 }

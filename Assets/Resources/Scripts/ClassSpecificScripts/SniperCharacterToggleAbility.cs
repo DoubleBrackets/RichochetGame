@@ -41,7 +41,7 @@ public class SniperCharacterToggleAbility : ToggleAbilityClass
             if (resourceValue >= toggleThreshholdValue && !isToggleActive)
             {
                 isToggleActive = true;
-                photonView.RPC("ToggleOn", RpcTarget.AllViaServer);
+                photonView.RPC("ToggleOn", RpcTarget.AllViaServer, PhotonNetwork.LocalPlayer.NickName);
             }
         }
         if(isToggleActive)
@@ -68,7 +68,7 @@ public class SniperCharacterToggleAbility : ToggleAbilityClass
     }
 
     [PunRPC]
-    protected override void ToggleOn()
+    protected override void ToggleOn(string name)
     {
         aimLineRen.enabled = true;
         PlayerShootingScript pShootScript = gameObject.GetComponent<PlayerShootingScript>();
@@ -79,11 +79,10 @@ public class SniperCharacterToggleAbility : ToggleAbilityClass
         pShootScript.reloadCooldown = baseReloadSpeed - reloadBonus;
         pShootScript.shootCooldown = baseShootCooldown - shootCooldownBonus;
         pShootScript.projPrefab = focusModeProjectile;
-        PlayerParticleManager.playerParticleManager.PlayParticle(playerParticleKey + PhotonNetwork.LocalPlayer.NickName);
-        
+        PlayerParticleManager.playerParticleManager.PlayParticle(playerParticleKey + name);
     }
     [PunRPC]
-    protected override void ToggleOff()
+    protected override void ToggleOff(string name)
     {
         aimLineRen.enabled = false;
         PlayerShootingScript pShootScript = gameObject.GetComponent<PlayerShootingScript>();
@@ -92,6 +91,6 @@ public class SniperCharacterToggleAbility : ToggleAbilityClass
         pShootScript.reloadCooldown = baseReloadSpeed;
         pShootScript.shootCooldown = baseShootCooldown;
         pShootScript.projPrefab = defaultProjectile;
-        PlayerParticleManager.playerParticleManager.StopParticle(playerParticleKey + PhotonNetwork.LocalPlayer.NickName);
+        PlayerParticleManager.playerParticleManager.StopParticle(playerParticleKey + name);
     }
 }

@@ -25,6 +25,8 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
 
     public Image positionArrow;
 
+    private static bool isHit = false;
+
     private void Awake()//Sets nametag on player instantiate
     {
         if (photonView.IsMine)
@@ -59,9 +61,9 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
     //Player dies when hit by projectile
     public void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.collider.gameObject.layer == 10)//Is a projectile
+        if(collision.collider.gameObject.layer == 10 && !isHit)//Is a projectile
         {
-            gameObject.layer = 11;
+            isHit = true;
             StartCoroutine(PlayerHit());           
         }
     }
@@ -127,6 +129,11 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
     private void UpdateReloadBar(float val, float max)
     {
         reloadBar.transform.localScale = new Vector2(val / max,1);
+    }
+
+    public static void SetIsHit(bool val)
+    {
+        isHit = val;
     }
 
 

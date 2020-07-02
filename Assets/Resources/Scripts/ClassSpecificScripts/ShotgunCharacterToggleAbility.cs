@@ -28,7 +28,7 @@ public class ShotgunCharacterToggleAbility : ToggleAbilityClass, IPunObservable
             if (resourceValue >= toggleThreshholdValue && !isToggleActive)
             {
                 isToggleActive = true;
-                photonView.RPC("ToggleOn", RpcTarget.AllViaServer);
+                photonView.RPC("ToggleOn", RpcTarget.AllViaServer, PhotonNetwork.LocalPlayer.NickName);
             }
         }
 
@@ -41,7 +41,7 @@ public class ShotgunCharacterToggleAbility : ToggleAbilityClass, IPunObservable
 
 
     [PunRPC]
-    protected override void ToggleOn()
+    protected override void ToggleOn(string name)
     {
         PlayerShootingScript pShootScript = gameObject.GetComponent<PlayerShootingScript>();
         PlayerMovementScript playerMovementScript = gameObject.GetComponent<PlayerMovementScript>();
@@ -50,11 +50,11 @@ public class ShotgunCharacterToggleAbility : ToggleAbilityClass, IPunObservable
         playerMovementScript.IncrementSlowdownActive();
         playerMovementScript.IncrementMovementActive();
         playerMovementScript.IncrementCanDash();
-        PlayerParticleManager.playerParticleManager.PlayParticle(playerParticleKey + PhotonNetwork.LocalPlayer.NickName);
+        PlayerParticleManager.playerParticleManager.PlayParticle(playerParticleKey + name);
         
     }
     [PunRPC]
-    protected override void ToggleOff()
+    protected override void ToggleOff(string name)
     {
         PlayerShootingScript pShootScript = gameObject.GetComponent<PlayerShootingScript>();
         PlayerMovementScript playerMovementScript = gameObject.GetComponent<PlayerMovementScript>();
@@ -64,7 +64,7 @@ public class ShotgunCharacterToggleAbility : ToggleAbilityClass, IPunObservable
         playerMovementScript.DecrementSlowdownActive();
         playerMovementScript.DecrementMovementActive();
         playerMovementScript.DecrementCanDash();
-        PlayerParticleManager.playerParticleManager.StopParticle(playerParticleKey + PhotonNetwork.LocalPlayer.NickName);
+        PlayerParticleManager.playerParticleManager.StopParticle(playerParticleKey + name);
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

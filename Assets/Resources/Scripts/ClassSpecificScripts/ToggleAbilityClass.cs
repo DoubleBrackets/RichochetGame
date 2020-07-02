@@ -53,12 +53,12 @@ public abstract class ToggleAbilityClass : MonoBehaviourPunCallbacks
             if(resourceValue <= 0)
             {
                 resourceValue = 0;
-                photonView.RPC("ToggleOff", RpcTarget.AllViaServer);
+                photonView.RPC("ToggleOff", RpcTarget.AllViaServer, PhotonNetwork.LocalPlayer.NickName);
                 isToggleActive = false;
             }
         }
         UpdateResourceBar();
     }
-    protected abstract void ToggleOn();
-    protected abstract void ToggleOff();
+    protected abstract void ToggleOn(string name);
+    protected abstract void ToggleOff(string name);
 }
