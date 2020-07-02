@@ -35,7 +35,7 @@ public abstract class ToggleAbilityClass : MonoBehaviourPunCallbacks
     public void ResetResourceValue()
     {
         resourceValue = 0;
-        UpdateResourceBar();
+        UpdateResourceValues();
         PlayerParticleManager.playerParticleManager.StopParticle(playerParticleKey + PhotonNetwork.LocalPlayer.NickName);
     }
 

@@ -18,11 +18,15 @@ public class SniperCharacterToggleAbility : ToggleAbilityClass
 
     private LayerMask indicatorRaycastMask;
 
+    public GameObject focusModeProjectile;
+    private GameObject defaultProjectile;
+
     private void Awake()
     {
         aimLineRen = gameObject.GetComponentInChildren<LineRenderer>();
         aimLineRen.positionCount = numberOfBouncesShown + 2;
         indicatorRaycastMask = LayerMask.GetMask(new string[] { "Terrain" });
+        defaultProjectile = gameObject.GetComponent<PlayerShootingScript>().projPrefab;
     }
 
     void Update()
@@ -74,7 +78,9 @@ public class SniperCharacterToggleAbility : ToggleAbilityClass
         playerMovementScript.ChangeMovementBonusRPC(movementBonus);
         pShootScript.reloadCooldown = baseReloadSpeed - reloadBonus;
         pShootScript.shootCooldown = baseShootCooldown - shootCooldownBonus;
+        pShootScript.projPrefab = focusModeProjectile;
         PlayerParticleManager.playerParticleManager.PlayParticle(playerParticleKey + PhotonNetwork.LocalPlayer.NickName);
+        
     }
     [PunRPC]
     protected override void ToggleOff()
@@ -85,6 +91,7 @@ public class SniperCharacterToggleAbility : ToggleAbilityClass
         playerMovementScript.ChangeMovementBonusRPC(0);
         pShootScript.reloadCooldown = baseReloadSpeed;
         pShootScript.shootCooldown = baseShootCooldown;
+        pShootScript.projPrefab = defaultProjectile;
         PlayerParticleManager.playerParticleManager.StopParticle(playerParticleKey + PhotonNetwork.LocalPlayer.NickName);
     }
 }

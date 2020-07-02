@@ -13,8 +13,6 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
     public float slowdownInterval = 0f;
     public bool slowdownAfterBounce = true;
 
-    private float deAccelRate = 0;//For slowdown
-
     public Rigidbody2D rigidBody;
     public LineRenderer lineRen;
     public ParticleSystem onCollisionParticles;
@@ -46,10 +44,6 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        if(slowdownAfterShot)
-        {
-            deAccelRate = (speed - speedAfterBounce) / slowdownInterval;
-        }
         bulletParticle = gameObject.GetComponent<ParticleSystem>();
         widthMult = lineRen.widthMultiplier;
         coll = gameObject.GetComponent<Collider2D>();
@@ -145,7 +139,7 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
         int bounceCounterLocal = bounceCounter;
         rigidBody.velocity = savedVelocityOnBounce.normalized * speed;
         Vector2 diff = target - (Vector2)transform.position;
-        if (slowdownInterval == 0)
+        if (slowdownInterval == 0)//If there is no slowdown immediately following a shot
         {            
             float time = diff.magnitude / speed;
             yield return new WaitForSeconds(time);
@@ -154,7 +148,7 @@ public class ProjectileScript : MonoBehaviourPunCallbacks
             transform.position = target;
             OnCollisionReached();
         }
-        else
+        else//if slowing down, then watches projectile position rather than calculating the time
         {
             Vector2 startPos = transform.position;
             float diffMag = diff.magnitude;

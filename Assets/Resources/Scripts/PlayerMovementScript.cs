@@ -32,6 +32,8 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
     private float dashingCooldown = 1f;
     private float dashingCooldownTimer = 0;
 
+    private int canDash = 0;
+
 
 
 
@@ -61,7 +63,7 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
 
         if (GetInputVector() != Vector2.zero)
             dashVector = GetInputVector();
-        if (photonView.IsMine && dashingCooldownTimer <= 0)
+        if (photonView.IsMine && dashingCooldownTimer <= 0 && canDash == 0)
         {
             //Gets dash vector
             if ((Input.GetMouseButtonDown(1)))
@@ -239,5 +241,25 @@ public class PlayerMovementScript : MonoBehaviourPunCallbacks, IPunObservable
     public float GetDashingVertical()
     {
         return dashVector.y;
+    }
+
+    public float GetMovementForce()
+    {
+        return movementForce;
+    }
+
+    public void SetMovementForce(float val)
+    {
+        movementForce = val;
+    }
+
+    public void IncrementCanDash()
+    {
+        canDash++;
+    }
+
+    public void DecrementCanDash()
+    {
+        canDash--;
     }
 }

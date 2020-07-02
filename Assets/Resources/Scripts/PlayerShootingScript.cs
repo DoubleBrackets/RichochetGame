@@ -30,6 +30,8 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
 
     public int numberOfBulletsPerShot = 1;
     public float bulletSpread = 0;
+
+    private int canShoot = 0;
     private void Awake()
     {
         ResetAmmo();
@@ -54,7 +56,7 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
                 gameObject.GetComponent<PlayerNetworkingScript>().SetAmmoValueRPC(ammo, maxAmmo);
             }
         }
-        if (Input.GetMouseButton(0) && shootCooldownTimer <= 0 && ammo > 0)
+        if (Input.GetMouseButton(0) && shootCooldownTimer <= 0 && ammo > 0 && canShoot == 0)
         {
             ammo--;
             //Updates ammo value
@@ -154,7 +156,7 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
     {
         Physics2D.IgnoreCollision(c1, proj, true);
         Physics2D.IgnoreCollision(screenShakeTrigger, proj, true);
-        for(int x = 0;x < 3;x++)
+        for(int x = 0;x < 5;x++)
             yield return new WaitForFixedUpdate();
         Physics2D.IgnoreCollision(c1, proj, false);
         Physics2D.IgnoreCollision(screenShakeTrigger, proj, false);
@@ -167,4 +169,13 @@ public class PlayerShootingScript : MonoBehaviourPunCallbacks
         
     }
 
+    public void IncrementCanShoot()
+    {
+        canShoot++;
+    }
+
+    public void DecrementCanShoot()
+    {
+        canShoot--;
+    }
 }

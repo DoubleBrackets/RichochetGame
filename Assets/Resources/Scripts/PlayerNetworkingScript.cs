@@ -61,6 +61,7 @@ public class PlayerNetworkingScript : MonoBehaviourPunCallbacks
     {
         if(collision.collider.gameObject.layer == 10)//Is a projectile
         {
+            gameObject.layer = 11;
             StartCoroutine(PlayerHit());           
         }
     }

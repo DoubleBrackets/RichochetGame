@@ -164,7 +164,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     //Local method, run when local player dies
     public void PlayerDeathRPC(string name)
     {
-
         photonView.RPC("RoundEnded", RpcTarget.All, name,GetRandomMapIndex());
     }
 
